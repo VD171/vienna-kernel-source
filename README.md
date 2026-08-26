@@ -1,5 +1,7 @@
 # vienna-kernel-source
 
+🇬🇧 English · [🇧🇷 Português](README.pt-BR.md)
+
 Kernel sources for the **Motorola Edge 60 Neo** (`vienna`, XT2509-1, MT6878 / Dimensity 7400),
 extracted from Motorola's official GPL release. **One branch per build tag.**
 
