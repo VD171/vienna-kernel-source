@@ -1,0 +1,187 @@
+#
+# motorola touchscreen driver configuration
+#
+config TOUCHSCREEN_GOODIX_BRL_SPI
+	bool "Support SPI bus connection"
+	help
+		Say Y here if the touchscreen is connected via SPI bus.
+
+config INPUT_TOUCHSCREEN_MMI
+	bool "Support moto touchscreen mmi framework"
+	help
+		Say Y here if the touchscreen_mmi be used.
+
+config GTP_USE_MMI_INFO
+	bool "Use mmi info for get panel name"
+	help
+		Say Y here if use mmi_info.
+
+config GTP_MULTI_CONFIG
+	bool "Use different config files"
+	help
+		Say Y here if use use different config names based on different modules.
+
+config TARGET_BUILD_FACTORY
+	bool "Identify if it's a factory build"
+	help
+		Say Y here if it's a factory build for touch driver.
+
+config TOUCHCLASS_MMI_MTK_CHARGER
+	bool "Support mtk charger detection"
+	help
+		Say Y here if use mtk charger detection for touchscreen mmi.
+
+config GTP_LAST_TIME
+	bool "Support get the timestamp of last touch event"
+	help
+		Say Y here if need to get the timestamp of last touch event.
+
+config BOARD_USES_DOUBLE_TAP_CTRL
+	bool "Support touch wake gesture feature"
+	help
+		Say Y here if support touch wake gesture feature.
+
+config GTP_GLOVE_MODE
+	bool "Support touch glove mode feature"
+	help
+		Say Y here if support glove mode feature.
+
+config ENABLE_GTP_PALM_CANCEL
+	bool "Support touch palm cancel feature"
+	help
+		Say Y here if support touch palm cancel feature.
+
+config INPUT_GOODIX_MMI_ENABLE_PALM
+	bool "Support touch palm sensor"
+	help
+		Say Y here if support touch palm sensor for assist p-sensor detection.
+
+config MTK_PROJECT_NAME
+	string "set project name"
+	help
+		This config is set as project name for touch to select configuration.
+
+config MOTO_BUILD_VARIANT
+	string "set build variant"
+	help
+		This config is set as build variant for touch.
+
+config GTP_GHOST_LOG_CAPTURE
+	bool "Support ghost touch log capture feature"
+	help
+		Say Y here if support ghost touch log capture feature.
+
+config GTP_FOD
+	bool "Support fod feature"
+	help
+		Say Y here if support fod feature.
+
+config GTP_POCKET_MODE
+	bool "Support pocket mode feature"
+	help
+		Say Y here if support pockey mode feature.
+
+config GTP_CS_DELAY
+	bool "Set SPI CS setuptime"
+	help
+		Say Y here if need to adjust CS setuptime.
+
+config GOODIX_ESD_ENABLE
+   bool "Support TP esd check"
+   help
+		Say Y here if need to support TP esd check feature.
+
+config GTP_SPI_PINCTRL
+	bool "Set SPI mode"
+	help
+		Say Y here if need to adjust SPI mode.
+
+config TOUCH_HARDWARE_STATUS
+	bool "Get hardware status"
+	help
+		Say Y here if need to support get hardware status information.
+
+config ENABLE_GTP_PALM_CANCEL_BY_ID
+	bool "Support goodix touch palm cancel by ID feature"
+	help
+		Say Y here if support goodix report touch palm cancel by ID feature.
+
+
+config MTK_PROJECT_NAME
+	string "set project name"
+	help
+		This config is set as project name for touch to select configuration.
+
+config FOCALTECH_TOUCH_IC_NAME
+	string "set focaltech touch IC name"
+	help
+		This config is set as IC name for touch to select configuration.
+
+config FTS_COMPATIBLE_WITH_GKI
+	bool "Driver compatible with GKI"
+	help
+		Say Y here if need to compatible with GKI.
+
+config FTS_VDD_GPIO_CONTROL
+	bool "VDD ~3.3V controlled by gpio"
+	help
+		Say Y here if need to control vdd by gpio.
+
+config FTS_POWER_PMU_CONTROL
+	bool "VDD ~3.3V controlled by pmu"
+	help
+		Say Y here if need to control vdd by pmu.
+
+config FTS_DOUBLE_TAP_CONTROL
+	bool "Support touch wake gesture feature"
+	help
+		Say Y here if support touch wake gesture feature.
+
+config SUPPORT_FTS_HIRES_X
+	string "Set touch resolution multiplier"
+	help
+		This config is set touch resolution multiplier.
+
+config FTS_INPUT_ID
+	bool "Support focaltech input ID"
+	help
+		Say Y here if need to set focaltech input ID.
+
+config FTS_GAME_MODE_EN
+
+	bool "Support game mode feature"
+	help
+		Say Y here if need to support game mode feature.
+
+config ENABLE_FTS_PALM_CANCEL
+
+	bool "Support touch palm cancel feature"
+	help
+		Say Y here if support touch palm cancel feature.
+
+config ENABLE_FTS_PALM_CANCEL_BY_ID
+
+	bool "Support touch palm cancel by ID feature"
+	help
+		Say Y here if support report touch palm cancel by ID feature.
+
+config INPUT_FOCALTECH_V3_MMI_ENABLE_DOUBLE_TAP
+
+	bool "Support tap sensor"
+	help
+		Say Y here if need to enable tap sensor.
+
+config FTS_LAST_TIME
+	bool "Support get the timestamp of last touch event for focaltech"
+	help
+		Say Y here if need to get the timestamp of last touch event.
+
+config TOUCHSCREEN_GOODIX_TIMING
+	bool "TP timing repair"
+	help
+		Say Y here  is TP timing repair.
+
+config ESWIN_GHOST_LOG_CAPTURE
+	bool "Support ghost touch log capture feature"
+	help
+		Say Y here if support ghost touch log capture feature.

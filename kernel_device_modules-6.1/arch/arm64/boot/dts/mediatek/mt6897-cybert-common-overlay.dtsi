@@ -1,0 +1,414 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "mediatek/mt6897-moto-common-overlay-single-panel.dtsi"
+
+#include "mediatek/cybert-charger.dtsi"
+#include "mediatek/cybert-fps.dtsi"
+#include "mediatek/cybert-ntc.dtsi"
+#include "mediatek/cybert-display.dtsi"
+#include "mediatek/cybert-touch.dtsi"
+#include "mediatek/cybert-audio.dtsi"
+#include "mediatek/cybert_perf_mon.dtsi"
+
+&rt5133 {
+	status = "disabled";
+};
+
+&regulator_vibrator {
+	status = "disabled";
+};
+
+&mmc1 {
+	status = "disabled";
+};
+
+&pio {
+	nfc_spi_cs_mode_spi: nfc_spi_cs_mode_spi {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO28__FUNC_SPI3_CSB>;
+			bias-disable;
+		};
+	};
+
+	nfc_spi_cs_mode_idle: nfc_spi_cs_mode_idle {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO28__FUNC_GPIO28>;
+			bias-disable;
+		};
+	};
+};
+
+
+&spi3 {
+	st54spi: st54spi@0 {
+		compatible = "st,st54spi";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+		gpio-power_nreset = <36>;
+		gpio-power_nreset-std = <&pio 36 0x00>;
+		power_mode = "ST54J";
+		bootmode = <&chosen>;
+		pinctrl-names = "pinctrl_state_mode_spi",
+				"pinctrl_state_mode_idle";
+		pinctrl-0 = <&nfc_spi_cs_mode_spi>;
+		pinctrl-1 = <&nfc_spi_cs_mode_idle>;
+		status = "okay";
+	};
+};
+
+&i2c3 {
+	status = "ok";
+	clock-frequency = <400000>;
+	st21nfc: st21nfc@0x08 {
+		compatible = "st,st21nfc";
+		reg = <0x08>;
+		interrupt-parent = <&pio>;
+		interrupts = <37 0>;
+		bootmode = <&chosen>;
+		reset-gpios = <&pio 38 0x00>;
+		irq-gpios = <&pio 37 0x00>;
+		clkreq-gpios = <&pio 84 0x00>;
+		status = "ok";
+	};
+};
+
+&pio {
+	sar_int_default: sar_int_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO39__FUNC_GPIO39>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+
+	sar_int_sleep: sar_int_sleep {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO39__FUNC_GPIO39>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+	gpio1_input_pull_up: gpio1_input_pull_up {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO24__FUNC_GPIO24>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	phone_case_int_default: phone_case_int_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO26__FUNC_GPIO26>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	phone_case_int_sleep: phone_case_int_sleep {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO26__FUNC_GPIO26>;
+			input-enable;
+			bias-disable;
+		};
+	};
+};
+
+&therm_intf {
+	/*Vsensor name should be CASE DIFFERENT with the name in config file*/
+	mmi,temperature-names = "BACK_TEMP", "FRONT_TEMP";/*for "back_temp" in config file*/
+};
+
+&rt6160_bus5{
+	status = "ok";
+};
+
+&i2c5 {
+	hl7603@77 {
+		status = "ok";
+		compatible = "hl7603";
+		reg = <0x77>;
+		/* hl7603_vout_voltage = <0x0B>; //3.4v */
+	};
+};
+
+&mt6368_vio28 {
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+};
+
+&i2c0 {
+	status = "ok";
+
+	sx937x@2c { /* SAR sensor */
+		compatible = "Semtech,sx937x";
+		reg = <0x2c>;
+		Semtech,power-supply-type = <0>;
+		cap_vdd-supply = <&mt6363_vio18>;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&sar_int_default>;
+		pinctrl-1 = <&sar_int_sleep>;
+		interrupt-parent = <&pio>;
+		interrupts = <39 0x02>;
+		interrupt-names = "capsense0_irq";
+		Semtech,nirq-gpio= <&pio 39 0x02>;
+		esd-reinit-on = <1>;
+		/*use PH5/6 as the reference sensor
+		set it to 0xff if the ref-phases-x is not used*/
+		Semtech,ref-phases-a = <5>;
+		Semtech,ref-phases-b = <6>;
+		Semtech,ref-phases-c = <0xff>;
+		Semtech,button-flag = <0x0f>;
+		Semtech,reg-num = <67>;
+		Semtech,reg-init = <
+			0x8024 0x7F00
+			0x4004 0x70
+			0x4280 0x0
+			0x8020 0x32
+			0x8028 0x26E
+			0x8034 0x26E
+			0x8040 0x26E
+			0x804C 0x26E
+			0x8058 0x26E
+			0x8064 0x26E
+			0x8070 0x26E
+			0x807C 0x0
+			0x8030 0xFFF9FD
+			0x803C 0xF7F9FF
+			0x8048 0xFEF9FF
+			0x8054 0xBFF9FF
+			0x8060 0xFFF9EF
+			0x806C 0xFFD9FF
+			0x8078 0xF7F97F
+			0x8084 0x0
+			0x8098 0x884E
+			0x80B8 0x704E
+			0x80D8 0x884E
+			0x80F8 0x1F1F
+			0x8118 0x0
+			0x8138 0x0
+			0x8158 0x0
+			0x8178 0x0
+			0x80A0 0x0
+			0x80C0 0x0
+			0x80E0 0x0
+			0x8100 0x0
+			0x8120 0x0
+			0x8140 0x0
+			0x8160 0x0
+			0x8180 0x0
+			0x8188 0x8000014
+			0x818C 0x8000015
+			0x8190 0x8000016
+			0x8194 0x0
+			0x8090 0x0
+			0x80B0 0x0
+			0x80D0 0x0
+			0x80F0 0x0
+			0x8110 0x0
+			0x8130 0x0
+			0x8150 0x0
+			0x8170 0x0
+			0x8088 0x300000
+			0x80A8 0x300000
+			0x80C8 0x300000
+			0x80E8 0x300000
+			0x8108 0x300000
+			0x8128 0x300000
+			0x8148 0x300000
+			0x8168 0x0
+			0x808C 0xE0602218
+			0x80AC 0xE0602218
+			0x80CC 0xE0602218
+			0x80EC 0xE0602218
+			0x810C 0xE0602218
+			0x812C 0xE0600018
+			0x814C 0xE0602318
+			0x816C 0x0
+			0x4280 0xF
+			0x8024 0x7F7F
+			0x4280 0xE
+		>;
+		status = "okay";
+	};
+	awinic_sar:awinic_sar@12 {
+			/* common node */
+			compatible = "awinic,aw_sar";
+			reg = < 0x12 >;
+			sar-num = < 0 >;
+			pinctrl-names = "default","sleep";
+			pinctrl-0 = <&sar_int_default>;
+			pinctrl-1 = <&sar_int_sleep>;
+			interrupt-parent = <&pio>;
+			interrupts = <39 0x02>;
+			interrupt-names = "awinic_irq";
+			irq-gpio = <&pio 39 0x02>;
+			//vcc0-supply = <&mt6363_vio18>;
+			channel_use_flag = <0x0f>;
+			monitor_esd_flag = <1>;
+			aw_sar,use_plug_cail;
+			aw_sar,new_fw_format;
+			//aw_sar,update_fw;
+			aw_sar,using_pm_ops;
+			/* private node belongs to aw963xx */
+			start-mode = < 1 >; // 0: start in rom  1: start in ram
+			irq-mux = < 2 >; // set csx as irq pin. config this field when connect to aw96308/aw96310
+			status = "okay";
+	};
+};
+
+&hall_phone_case_detect {
+	pinctrl-names = "default","sleep";
+	pinctrl-0 = <&phone_case_int_default>;
+	pinctrl-1 = <&phone_case_int_sleep>;
+	hall,factory-class-name = "hall_gpio";
+	hall,input-dev-name = "phone_case_hall_sensor";
+	/* hall_vdd-supply = <&pm8350c_l8>; */
+	hall,nirq-gpio-num = <1>;
+	hall,nirq-gpio_0 = <&pio 26 0x02>;
+	hall,nirq-gpio-high-val_0 = <0>;
+	hall,nirq-gpio-low-val_0 = <1>;
+};
+
+&i2c1 {
+	clock-frequency = <400000>;
+	status = "okay";
+	haptic_hv@5A {
+		status = "okay";
+		compatible = "awinic,haptic_hv";
+		reg = <0x5A>;
+		irq-gpio = <&pio 24 0>;
+		reset-gpio = <&pio 23 0>;
+		pinctrl-names = "irq_active";
+		pinctrl-0 = <&gpio1_input_pull_up>;
+		f0_pre = < 1700 >;
+		mode = /bits/ 8 < 5 >;
+
+		aw8693x_f0_cali_percent = /bits/ 8 < 15 >;
+		aw8693x_gain_bypass = /bits/ 8 < 1 >;
+		aw8693x_uvlo_vol_default = /bits/ 8 < 0 >;
+		aw8693x_cont_smart_loop = /bits/ 8 < 0 >;
+		aw8693x_cont_drv1_lvl = /bits/ 8 < 0x7F >;
+		aw8693x_cont_lra_vrms = < 1000 >;
+		aw8693x_cont_drv1_time = /bits/ 8 < 0x04 >;
+		aw8693x_cont_drv2_time = /bits/ 8 < 0x14 >;
+		aw8693x_cont_track_margin = /bits/ 8 < 0x0F >;
+		aw8693x_cont_brk_gain = /bits/ 8 < 0x08 >;
+		aw8693x_cont_brk_time = /bits/ 8 < 0x08 >;
+		aw8693x_duration_time = /bits/ 8 < 20 30 60 >;
+		aw8693x_d2s_gain = /bits/ 8 < 0x04 >;
+		aw8693x_trig_config = /bits/ 8 < 0 0 0 1 0 2 0 0
+						 0 0 0 1 0 2 0 0
+						 0 0 0 1 0 2 0 0 >;
+		aw8693x_bst_vol_default = < 8500 >;
+		aw8693x_is_enabled_track_en;
+		aw8693x_is_pwm_12k;
+		/* aw8693x_is_enabled_auto_bst; */
+		/* aw8693x_is_enabled_one_wire; */
+	};
+
+};
+
+&u2port0{
+        mediatek,eye-vrt = <0x3>;
+        mediatek,eye-vrt-host = <0x3>;
+        mediatek,eye-term = <0x4>;
+        mediatek,eye-term-host = <0x4>;
+        mediatek,rev6 = <0x2>;
+        mediatek,rev6-host = <0x2>;
+};
+
+&usb_boost{
+        customization-boost;
+        small-core-f = <1250000>;
+        middle-core-f = <1600000>;
+        big-core-f = <1600000>;
+};
+
+/*vol+/- keys swap*/
+&mt6363keys {
+	home {
+		linux,keycodes = <114>;
+	};
+};
+
+/* KEY GPIO standardization start */
+&pio{
+	aikey_gpio_default:key-default {
+		ai_key_int {
+			pinmux = <PINMUX_GPIO101__FUNC_GPIO101>;
+			input-enable;
+			bias-pull-up;
+		};
+	};
+};
+/* KEY GPIO standardization end */
+&gpio_keys {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&aikey_gpio_default>;
+	aikey {
+		label = "AI_key";
+		linux,code = <583>;
+		linux,input-type = <1>;
+		gpios = <&pio 101 1>;
+		wakeup-source;
+		debounce-interval = <30>;
+	};
+};
+
+&low_battery_throttling {
+        thd-volts-l = <
+                3099 2985 2900
+                3452 3153 3042
+                3885 3471 3315>;
+        thd-volts-h = <
+                3199 3099 2985
+                3552 3452 3153
+                3985 3885 3471>;
+        lvsys-thd-volt-l = <2900>;
+        lvsys-thd-volt-h = <2985>;
+};
+
+&cpu_power_throttling {
+        lbat-limit-freq-lv2 = < 1800000  1800000 1800000>;
+        lbat-limit-freq-lv3 = < 1200000  1200000 1200000>;
+};
+
+&gpu_power_throttling {
+        lbat-limit-freq = <1200000 700000 600000>;
+};
+
+&bp_thl {
+        soc-limit-threshold = <5>;
+};
+
+&mt6375_batoc_throttle {
+        status = "disabled";
+};
+
+&md_power_throttling {
+        lbat-max-level = <3>;
+        lbat-reduce-tx-lv1 = <0>;
+        lbat-reduce-tx-lv2 = <0>;
+        lbat-reduce-tx-lv3 = <0>;
+
+        oc-max-level = <2>;
+        oc-reduce-tx-lv1 = <0>;
+        oc-reduce-tx-lv2 = <0>;
+
+        soc-max-level = <1>;
+        soc-reduce-tx-lv1 = <6>;
+};
+

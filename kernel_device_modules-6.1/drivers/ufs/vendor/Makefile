@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: GPL-2.0
+# Mediatek UFS extended features makefile
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/clk/mediatek/
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include/
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/power_throttling/
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/ufs/
+ifeq ($(CONFIG_UFSHID_V3),y)
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/ufs/v3
+endif
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/ufs/vendor/
+
+# must after -I$(DEVICE_MODULES_PATH)/drivers/ufs/
+ccflags-y += -I$(srctree)/drivers/ufs/
+ccflags-y += -I$(srctree)/drivers/ufs/core/
+ccflags-y += -I$(srctree)/drivers/ufs/host/
+
+ifneq ($(filter y m, $(CONFIG_TRUSTONIC_TEE_SUPPORT)),)
+include $(DEVICE_MODULES_PATH)/drivers/tee/gud/Makefile.include
+endif
+
+# UFS KO without iSE
+obj-$(CONFIG_DEVICE_MODULES_SCSI_UFS_MEDIATEK)  += ufs-mediatek-mod.o
+ufs-mediatek-mod-y                              += ../ufs-mediatek.o ../ufs-mediatek-sysfs.o ../ufs-mediatek-mimic.o
+ufs-mediatek-mod-$(CONFIG_MTK_BLOCK_IO_TRACER)  += ../ufs-mediatek-btag.o
+ufs-mediatek-mod-$(CONFIG_RPMB)                 += ../ufs-mediatek-rpmb.o
+ufs-mediatek-mod-$(CONFIG_RPMB)                 += ../ufs-mediatek-ise-dummy.o
+ifeq ($(CONFIG_UFSHID_V3),y)
+ufs-mediatek-mod-$(CONFIG_UFSFEATURE)           += ../v3/ufsfeature.o ufsfeature-mimic.o
+ufs-mediatek-mod-$(CONFIG_UFSHID_V3)           += ../v3/ufshid.o
+else
+ufs-mediatek-mod-$(CONFIG_UFSFEATURE)           += ufsfeature.o ufsfeature-mimic.o
+ufs-mediatek-mod-$(CONFIG_UFSHID)               += ufshid.o
+endif
+ufs-mediatek-mod-$(CONFIG_SCSI_SKHID)           += ufs-manual-gc.o
+ufs-mediatek-mod-$(CONFIG_FSCRYPT_WRAPED_KEY_MODE_SUPPORT) += ../ufshcd-moto-crypto.o
+
+# UFS KO with iSE enabled
+obj-$(CONFIG_DEVICE_MODULES_SCSI_UFS_MEDIATEK)  += ufs-mediatek-mod-ise.o
+ufs-mediatek-mod-ise-y                              += ../ufs-mediatek.o ../ufs-mediatek-sysfs.o ../ufs-mediatek-mimic.o
+ufs-mediatek-mod-ise-$(CONFIG_MTK_BLOCK_IO_TRACER)  += ../ufs-mediatek-btag.o
+ufs-mediatek-mod-ise-$(CONFIG_RPMB)                 += ../ufs-mediatek-rpmb.o
+ufs-mediatek-mod-ise-$(CONFIG_RPMB)                 += ../ufs-mediatek-ise.o
+ifeq ($(CONFIG_UFSHID_V3),y)
+ufs-mediatek-mod-ise-$(CONFIG_UFSFEATURE)           += ../v3/ufsfeature.o ufsfeature-mimic.o
+ufs-mediatek-mod-ise-$(CONFIG_UFSHID)               += ../v3/ufshid.o
+else
+ufs-mediatek-mod-ise-$(CONFIG_UFSFEATURE)           += ufsfeature.o ufsfeature-mimic.o
+ufs-mediatek-mod-ise-$(CONFIG_UFSHID)               += ufshid.o
+endif
+ufs-mediatek-mod-ise-$(CONFIG_SCSI_SKHID)           += ufs-manual-gc.o
+ufs-mediatek-mod-ise-$(CONFIG_FSCRYPT_WRAPED_KEY_MODE_SUPPORT) += ../ufshcd-moto-crypto.o

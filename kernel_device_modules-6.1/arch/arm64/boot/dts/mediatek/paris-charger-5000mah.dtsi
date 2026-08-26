@@ -1,0 +1,111 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&moto_chg_tcmd {
+	mmi,batt-ids-map = "1", "ATLSP50NVT";
+};
+
+&bp_thl {
+	soc-limit-threshold = <5>;
+};
+
+&lk_charger {
+        boot-battery-voltage = <3300000>;
+        boot-battery-voltage-max = <3300000>;
+        /*boot battery voltage when using AC charger*/
+        ac_charger_boot_battery_voltage = <3200000>;
+};
+
+&low_battery_throttling {
+        thd-volts-l = <
+                3175 3066 2968
+                3628 3282 3152
+                4400 3913 3698>;
+        thd-volts-h = <
+                3275 3175 3066
+                3728 3628 3282
+                4500 4400 3913>;
+        lvsys-thd-volt-l = <2968>;
+        lvsys-thd-volt-h = <3066>;
+};
+
+&cpu_power_throttling {
+        lbat-limit-freq-lv2 = < 1800000  1800000 1800000>;
+        lbat-limit-freq-lv3 = < 1200000  1200000 1200000>;
+};
+
+&gpu_power_throttling {
+        lbat-limit-freq = <1047000 709000 598000>;
+};
+
+&mt6375_batoc_throttle {
+        status = "disabled";
+};
+
+&md_power_throttling {
+        lbat-max-level = <3>;
+        lbat-reduce-tx-lv1 = <0>;
+        lbat-reduce-tx-lv2 = <0>;
+        lbat-reduce-tx-lv3 = <0>;
+
+        oc-max-level = <2>;
+        oc-reduce-tx-lv1 = <0>;
+        oc-reduce-tx-lv2 = <0>;
+
+        soc-max-level = <1>;
+        soc-reduce-tx-lv1 = <6>;
+};
+
+&mt6363_dynamic_loading_throttling {
+        status = "okay";
+        bob-check-flag = <0>;
+        uvlo-level = <2400>;
+        vbb-uvlo-level = <2500>;
+};
+
+&charger {
+	battery-cv = <4530000>;
+	mmi,iterm-ma = <243>;
+	mmi,mmi-temp-zones = <0 4200 970 0>,
+				<10 4250 4850 2425>,
+				<15 4530 4850 4850>,
+				<45 4150 12000 10000>,
+				<45 4250 10000 8000>,
+				<45 4350 8000 6000>,
+				<45 4450 6000 4870>,
+				<45 4530 4870 4870>,
+				<60 4200 4850 0>;
+	mmi,mmi-ffc-zones = <0 4200 243>,
+				<10 4530 243>,
+				<15 4530 243>,
+				<25 4560 802>,
+				<35 4560 937>,
+				<45 4560 1159>,
+				<60 4200 243>;
+	mmi,mmi-normal-zones = <0 4200 243>,
+				<10 4530 243>,
+				<15 4530 243>,
+				<25 4530 243>,
+				<35 4530 243>,
+				<45 4530 487>,
+				<60 4200 243>;
+};
+
+&NFG1000 {
+	mmi,batt-ids-map = "ATLSP50NVT","01";
+	batt_chem_versions = /bits/ 8 <0x4E 0x56 0x54 0x30 0x30 0x30
+					0x30 0x30 0x30 0x30 0x33>;
+};
+
+/*End of this file, DO NOT ADD ANYTHING HERE*/
+
+
