@@ -8,21 +8,28 @@ extraídas do release GPL oficial da Motorola. **Uma branch por tag de build.**
 > Isto é um **espelho**, não um fork. Nada aqui foi modificado. O conteúdo é byte a byte o que a
 > Motorola publicou, e os checksums abaixo permitem provar isso.
 
-## Por que espelhar, se a Motorola já publica
+## Por que isto existe, e o que NÃO é
 
-A Motorola publica em **tarballs de release** no
-[MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC/kernel-mtk/releases). Serve para compilar
-uma vez, e para mais nada. Extraído em git, você ganha:
+**Leia isto primeiro, para usar a ferramenta certa.** A Motorola publica estas fontes como
+repositórios git de verdade, com tag por build, e lá você já consegue navegar, `grep`, blame e diff:
 
-| | tarball | este espelho |
-|---|---|---|
-| busca de código do GitHub / `grep` | não | **sim** |
-| **`git diff` entre duas ROMs** | não | **sim**, e é o ponto principal |
-| blame, permalink de linha, fork, PR | não | **sim** |
-| baixar só o que precisa | não (214 MB) | **sim** (`--depth 1`, uma branch) |
+- [MotorolaMobilityLLC/kernel-mtk](https://github.com/MotorolaMobilityLLC/kernel-mtk)
+- [MotorolaMobilityLLC/kernel-kernel_device_modules-6.1](https://github.com/MotorolaMobilityLLC/kernel-kernel_device_modules-6.1)
 
-Diffar duas tags mostra exatamente o que a Motorola mudou entre dois releases de ROM. É a coisa mais
-útil que este repo faz.
+**Se você quer ver o que mudou entre duas ROMs, faça isso lá.** O compare do GitHub funciona nas tags
+deles e nada aqui é melhor que isso:
+`https://github.com/MotorolaMobilityLLC/kernel-mtk/compare/<tag-antiga>...<tag-nova>`
+
+Então este repo não é um jeito melhor de ler as fontes. Ele é um **snapshot arquivístico com
+checksum**, e existe por três motivos mais estreitos:
+
+1. **Seguro.** Tag de OEM é apagada, movida e force-pushada. Aqui estão os bytes exatos que foram
+   baixados, com SHA256 publicado, para uma build continuar reproduzível se o upstream mudar de forma.
+2. **Procedência.** São as árvores exatas contra as quais as minhas builds foram verificadas, não
+   "o que aquela tag apontar hoje".
+3. **Os dois projetos juntos.** Compilar exige `kernel-mtk` **e** `kernel_device_modules-6.1`; lá em
+   cima são dois repos que por acaso compartilham o nome das tags. Aqui uma branch é um conjunto
+   completo.
 
 ## Organização
 
@@ -42,7 +49,7 @@ Os dois vêm da mesma tag do lado da Motorola, então uma branch é um conjunto 
 |---|---|---|
 | [`MMI-W1UIS36H.39-17-8`](../../tree/MMI-W1UIS36H.39-17-8) | 16 | atual |
 
-Tags novas entram conforme forem lançadas. O catálogo completo das tags publicadas do `vienna` está em
+Tags novas podem ser arquivadas com o tempo. O catálogo completo das tags publicadas do `vienna` está em
 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build#fontes-de-kernel-publicadas-catálogo).
 
 ## Como pegar uma
@@ -93,7 +100,10 @@ copyright algum sobre o código espelhado.
 | 🛠 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build) | o build reprodutível, a receita de flash e as ferramentas |
 | 🧵 [thread no XDA](https://xdaforums.com/t/guide-rooting-how-to-root-motorola-60-edge-neo-5g-xt2509-1-vienna.4798267/) | `[GUIDE][ROOTING]` XT2509-1 (vienna) |
 | 💾 [stockrom.net, Edge 60 Neo 5G](https://www.stockrom.net/category/motorola/edge-60-neo-5g) | pacotes de firmware stock, se você precisar da ROM inteira |
-| 💬 [t.me/Edge60Neo](https://t.me/Edge60Neo) · [t.me/MotorolaEdge60Neo](https://t.me/MotorolaEdge60Neo) · [t.me/Motorola_Edge_60_Neo](https://t.me/Motorola_Edge_60_Neo) | grupos do aparelho no Telegram |
+| 📦 [VD171/vienna-kernel-source](https://github.com/VD171/vienna-kernel-source) | este repo |
+| 💬 [t.me/Edge60Neo](https://t.me/Edge60Neo) | Telegram, Edge 60 Neo |
+| 💬 [t.me/MotorolaEdge60Neo](https://t.me/MotorolaEdge60Neo) | Telegram, Motorola Edge 60 Neo |
+| 💬 [t.me/Motorola_Edge_60_Neo](https://t.me/Motorola_Edge_60_Neo) | Telegram, Motorola Edge 60 Neo |
 
 ## Contato
 
