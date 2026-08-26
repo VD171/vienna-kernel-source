@@ -85,6 +85,16 @@ The kernel sources are **GPL-2.0**, copyright their respective authors, released
 for. All original notices are intact. Nothing here is relicensed, and this repo claims no copyright
 over the mirrored code.
 
+## Links
+
+| Where | What |
+|---|---|
+| 🐧 [MotorolaMobilityLLC, `MMI-W1UIS36H.39-17-8`](https://github.com/MotorolaMobilityLLC/kernel-mtk/releases/tag/MMI-W1UIS36H.39-17-8) | the upstream release these sources are mirrored from |
+| 🛠 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build) | the reproducible build, the flash recipe, and the tooling |
+| 🧵 [XDA thread](https://xdaforums.com/t/guide-rooting-how-to-root-motorola-60-edge-neo-5g-xt2509-1-vienna.4798267/) | `[GUIDE][ROOTING]` XT2509-1 (vienna) |
+| 💾 [stockrom.net, Edge 60 Neo 5G](https://www.stockrom.net/category/motorola/edge-60-neo-5g) | stock firmware packages, if you need a full ROM |
+| 💬 [t.me/Edge60Neo](https://t.me/Edge60Neo) · [t.me/MotorolaEdge60Neo](https://t.me/MotorolaEdge60Neo) · [t.me/Motorola_Edge_60_Neo](https://t.me/Motorola_Edge_60_Neo) | Telegram groups for this device |
+
 ## Contact
 
 | Channel | Address |
