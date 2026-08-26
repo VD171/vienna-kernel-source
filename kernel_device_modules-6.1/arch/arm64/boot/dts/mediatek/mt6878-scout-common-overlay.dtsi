@@ -1,0 +1,611 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "mediatek/mt6878-moto-common-overlay-single-panel.dtsi"
+
+#include "mediatek/cust_scout_camera_v4l2.dtsi"
+#include "mediatek/scout-charger.dtsi"
+#include "mediatek/scout-fps.dtsi"
+#include "mediatek/scout-ntc.dtsi"
+#include "mediatek/scout-display.dtsi"
+#include "mediatek/scout-touch.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+
+&pio {
+	nfc_spi_cs_mode_spi: nfc_spi_cs_mode_spi {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO73__FUNC_SPI5_CSB>;
+			bias-disable;
+		};
+	};
+
+	nfc_spi_cs_mode_idle: nfc_spi_cs_mode_idle {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO73__FUNC_GPIO73>;
+			bias-disable;
+		};
+	};
+
+	sar_int_default: sar_int_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO114__FUNC_GPIO114>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+
+	sar_int_sleep: sar_int_sleep {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO114__FUNC_GPIO114>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+
+	i2c12_mode_default: i2c12_mode_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO53__FUNC_SCL12>,
+				<PINMUX_GPIO52__FUNC_SDA12>;
+			/*mt65xx.h PULL_UP 2.5k*/
+			bias-pull-up = <202>;
+		};
+	};
+};
+
+
+&spi5 {
+	p61: p61@0 {
+		compatible = "nxp,p61";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+		nxp,nfcc = "10-0029";
+//		nxp,p61-rst = <&gpio2 5 0>;
+		pinctrl-names = "pinctrl_state_mode_spi",
+				"pinctrl_state_mode_idle";
+		pinctrl-0 = <&nfc_spi_cs_mode_spi>;
+		pinctrl-1 = <&nfc_spi_cs_mode_idle>;
+		status = "okay";
+	};
+};
+
+&u2port0{
+	mediatek,eye-vrt = <4>;
+	mediatek,eye-vrt-host = <4>;
+	mediatek,eye-term = <4>;
+	mediatek,eye-term-host = <4>;
+	mediatek,rev6 = <3>;
+	mediatek,rev6-host = <3>;
+};
+
+&rt5133 {
+	status = "disabled";
+};
+
+//for alsps sensor
+&mt6369_vio28 {
+	regulator-min-microvolt = <3300000>;
+	regulator-max-microvolt = <3300000>;
+	regulator-always-on;
+};
+
+&mt6363_vio18 {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <2100000>;
+};
+
+&i2c10 {
+	status = "ok";
+	st21nfc: st21nfc@0x08 {
+		compatible = "st,st21nfc";
+		reg = <0x08>;
+		interrupt-parent = <&pio>;
+		interrupts = <2 0>;
+		bootmode = <&chosen>;
+		reset-gpios = <&pio 40 0x00>;
+		irq-gpios = <&pio 2 0x00>;
+		clkreq-gpios = <&pio 151 0x00>;
+		status = "disabled";
+	};
+	nfc_pn5xx: nfc_pn5xx@29 {
+		compatible = "qcom,sn-nci";
+		reg = <0x29>;
+		interrupt-parent = <&pio>;
+		interrupts = <2 0>;
+		qcom,sn-irq = <&pio 2 0>;
+		qcom,sn-ven = <&pio 40 0>;
+		status = "okay";
+	};
+
+	sx937x: sx937x@2c { /* SAR sensor */
+		compatible = "Semtech,sx937x";
+		reg = <0x2c>;
+		Semtech,power-supply-type = <0>;
+		cap_vdd-supply = <&mt6363_vio18>;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&sar_int_default>;
+		pinctrl-1 = <&sar_int_sleep>;
+		interrupt-parent = <&pio>;
+		interrupts = <114 0x02>;
+		interrupt-names = "sx937x_irq";
+		Semtech,nirq-gpio= <&pio 114 0x02>;
+		esd-reinit-on = <1>;
+		/*use PH5/6 as the reference sensor
+		set it to 0xff if the ref-phases-x is not used*/
+		Semtech,ref-phases-a = <4>;
+		Semtech,ref-phases-b = <5>;
+		Semtech,ref-phases-c = <6>;
+		Semtech,button-flag = <0x0f>;
+		Semtech,reg-num = <59>;
+		Semtech,reg-init = <
+			0x8024 0x00007F00
+			0x4004 0x00000074
+			0x4008 0x00000008
+			0x8020 0x00000032
+			0x8028 0x0000085E    /*AFE_PARAM_PH0*/
+			0x8034 0x0000085F    /*AFE_PARAM_PH1*/
+			0x8040 0x0000085E    /*AFE_PARAM_PH2*/
+			0x804C 0x0000085E    /*AFE_PARAM_PH3*/
+			0x8058 0x0000085E    /*AFE_PARAM_PH4*/
+			0x8064 0x0000085E    /*AFE_PARAM_PH5*/
+			0x8070 0x0000085E    /*AFE_PARAM_PH6*/
+			0x807C 0x0000085E    /*AFE_PARAM_PH7*/
+			/*set CS3 to HZ, because it used as IRQ pin*/
+			0x8030 0x00924925    /*REG_AFEPH_PH0, CS0, ANT0*/
+			0x803C 0x0092C924    /*REG_AFEPH_PH1, CS5, ANT1*/
+			0x8048 0x00964924    /*REG_AFEPH_PH2, CS6, ANT3/4/5*/
+			0x8054 0x00B24924    /*REG_AFEPH_PH3, CS7, ANT2*/
+			0x8060 0x0092492C    /*REG_AFEPH_PH4, CS1, ANT0_REF*/
+			0x806C 0x00924964    /*REG_AFEPH_PH5, CS2, ANT3/4/5 REF*/
+			0x8078 0x00925924    /*REG_AFEPH_PH6, CS4, ANT1 REF*/
+			0x8084 0x00B24924    /*REG_AFEPH_PH7, NOT USE*/
+			0x8098 0x00006239
+			0x80B8 0x00005130
+			0x80D8 0x00004630
+			0x80F8 0x00002525
+			0x8118 0x000000FF
+			0x8138 0x000000FF
+			0x8158 0x000000FF
+			0x8178 0x000000FF
+			0x80A0 0x1D1D0001
+			0x80C0 0x1D1D0003
+			0x80E0 0x5F5F0002
+			0x8100 0x24240001
+			0x8188 0x08000004
+			0x818C 0x08000005
+			0x8190 0x08000006
+			0x8090 0x54AC5000
+			0x80B0 0x34CC5000
+			0x80D0 0x54AC5000
+			0x80F0 0x30D05000
+			0x8110 0x54AC5000
+			0x8130 0x54AC5000
+			0x8150 0x54AC5000
+			0x8170 0x54AC5000
+			0x8088 0x00300000
+			0x80A8 0x00300000
+			0x80C8 0x00300000
+			0x80E8 0x00300000
+			0x8108 0x06300000
+			0x8128 0x06300000
+			0x8148 0x06300000
+			0x8168 0x06300000
+			0x808C 0x60200030
+			0x80AC 0x60200030
+			0x80CC 0x60200030
+			0x80EC 0x60200030
+			0x810C 0x60200030
+			0x812C 0x60200030
+			0x814C 0x60200030
+			0x816C 0x60200030
+		>;
+		status = "okay";
+	};
+
+	stk501xx: stk501xx@28 { /* SAR sensor */
+		compatible = "mediatek,stk501xx";
+		reg = <0x28>;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&sar_int_default>;
+		pinctrl-1 = <&sar_int_sleep>;
+		stk,direction = "in";
+		interrupt-parent = <&pio>;
+		interrupts = <114 0x02>;
+		interrupt-names = "stk501xx_irq";
+		stk501xx,irq-gpio = <&pio 114 0x02>;
+		ch_num = <4>;
+		major_phase = <0 1 1 0 1 0 1 0>; //major phase set to '1'
+		ref_phase   = <1 0 0 1 0 1 0 0>; //reference phase set to '1'
+		mapping_phase = <1 4 6 2 0 3 5 7>;
+		dist1_en = <0 1 0 0 1 0 0 0>; // enable dist1
+		dist0_thd = <90000 1300 500 90000 1600 90000 780 90000>;
+		dist1_thd = <90000 8000 90000 90000 8000 90000 5000 90000>;
+		tc_config_a = <44000 0 1 1 2 255>; //temp_delta_thd, ,maping_ref_ph, major_ph, base_reinit_ph_1, base_reinit_ph_2, base_reinit_ph_3
+		tc_config_b = <9500 3 4 4 255 255>; //temp_delta_thd, ,maping_ref_ph, major_ph, base_reinit_ph_1, base_reinit_ph_2, base_reinit_ph_3
+		tc_config_c = <4000 5 6 6 255 255>; //temp_delta_thd, ,maping_ref_ph, major_ph, base_reinit_ph_1, base_reinit_ph_2, base_reinit_ph_3
+		tc_ctrl_des_a = <409 3 3>; //delta_ctrl_thd, delta_deb_clr, delta_deb_set
+		tc_ctrl_des_b = <358 3 3>; //delta_ctrl_thd, delta_deb_clr, delta_deb_set
+		tc_ctrl_des_c = <307 3 3>; //delta_ctrl_thd, delta_deb_clr, delta_deb_set
+		rxio_map = < //usage: 0=OPT, 1=HZ, 2=GND, 3=SHIELD, 4=MEASUER
+			4 4	//RXIO_0 mappint to (phase_idx, usage)
+			5 4	//RXIO_1 mappint to (phase_idx, usage)
+			0 4	//RXIO_2 mappint to (phase_idx, usage)
+			0 0	//RXIO_3 is INT, don't change
+			3 4	//RXIO_4 mappint to (phase_idx, usage)
+			6 4	//RXIO_5 mappint to (phase_idx, usage)
+			2 4	//RXIO_6 mappint to (phase_idx, usage)
+			1 4	//RXIO_7 mappint to (phase_idx, usage)
+		>;
+		replace_reg_num = <139>;
+		replace_reg_val = <
+			0x104 0x0
+			0x100 0xf
+			0xa00 0xa
+			0x10 0xa5
+			0x768 0x110010
+			0x76c 0x1000
+			0x740 0x413aa
+			0x744 0x505000f
+			0x748 0x505
+			0x74c 0x30200
+			0x750 0xe0e001d
+			0x754 0xe0e
+			0x758 0x30200
+			0x75c 0x0D0D0019
+			0x760 0x00000D0D
+			0x764 0x30200
+			0x58 0x22242222
+			0x5c 0x22422222
+			0x60 0x22222224
+			0x64 0x0
+			0x68 0x22224222
+			0x6c 0x24222222
+			0x70 0x22222422
+			0x74 0x22222242
+			0xd0 0x00000960
+			0xd4 0x40ff
+			0x200 0x0
+			0x240 0x0
+			0x280 0x0
+			0x2c0 0x0
+			0x300 0x100000
+			0x340 0x0
+			0x380 0x200000
+			0x3c0 0x0
+			0x208 0x6000909
+			0x248 0x7000d0d
+			0x288 0x7000909
+			0x2c8 0x6000505
+			0x308 0x7000909
+			0x348 0x6000505
+			0x388 0x7000d0d
+			0x3c8 0x7000d0d
+			0x20c 0x20004007
+			0x24c 0x10004007
+			0x28c 0x20004007
+			0x2cc 0x00004007
+			0x30c 0x20004007
+			0x34c 0x00004007
+			0x38c 0x10004007
+			0x3cc 0x10004007
+			0x210 0x110
+			0x250 0x113
+			0x290 0x112
+			0x2d0 0x113
+			0x310 0x1123
+			0x350 0x112
+			0x390 0x112
+			0x3d0 0x112
+			0x214 0x8008010
+			0x254 0x8d08a14
+			0x294 0x9608D14
+			0x2d4 0x8008010
+			0x314 0xb909e15
+			0x354 0x8008010
+			0x394 0x11c12A16
+			0x3d4 0x8008000
+			0x430 0x0
+			0x434 0x0
+			0x438 0x3
+			0x43c 0x0
+			0x440 0x5
+			0x444 0x0
+			0x448 0x0
+			0x44c 0x0
+			0x218 0x4
+			0x258 0x4
+			0x298 0x4
+			0x2d8 0x4
+			0x318 0x4
+			0x358 0x4
+			0x398 0x4
+			0x3d8 0x4
+			0x21c 0x60000
+			0x25c 0x60000
+			0x29c 0x60000
+			0x2dc 0x60000
+			0x31c 0x60000
+			0x35c 0x60000
+			0x39c 0x60000
+			0x3dc 0x60000
+			0x224 0x3fffff00
+			0x264 0x3fffff00
+			0x2a4 0x3fffff00
+			0x2e4 0x3fffff00
+			0x324 0x3fffff00
+			0x364 0x3fffff00
+			0x3a4 0x3fffff00
+			0x3e4 0x3fffff00
+			0x22c 0x32323232
+			0x26c 0x32323223
+			0x2ac 0x32323223
+			0x2ec 0x32323232
+			0x32c 0x32323223
+			0x36c 0x32323232
+			0x3ac 0x32323223
+			0x3ec 0x32323232
+			0x230 0x7
+			0x270 0x7
+			0x2b0 0x7
+			0x2f0 0x7
+			0x330 0x7
+			0x370 0x7
+			0x3b0 0x7
+			0x3f0 0x7
+			0xb0 0x50000
+			0xb4 0x10101010
+			0xb8 0x10101010
+			0x400 0x1993321
+			0x404 0x663341
+			0x408 0x1333361
+			0x134 0x3ff03a0
+			0x480 0x12121212
+			0x484 0x38000
+			0x488 0x42424242
+			0x48c 0x38000
+			0x490 0x62626262
+			0x494 0x38000
+			0x498 0x0
+			0x49c 0x0
+			0xa00 0xa
+			0x10 0xa5
+			0x120 0x0
+			0x740 0x413aa
+			0x10 0x5a
+			0xa00 0x5
+			0x148 0xDAC0000
+			0x4 0x420ee
+			0x1100 0x15
+			0x130 0x12c03FF
+		>;
+
+		status = "disabled";
+	};
+
+	awinic_sar:awinic_sar@12 {
+		/* common node */
+		compatible = "awinic,aw_sar";
+		reg = < 0x12 >;
+		sar-num = < 0 >;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&sar_int_default>;
+		pinctrl-1 = <&sar_int_sleep>;
+		interrupt-parent = <&pio>;
+		interrupts = <114 0x02>;
+		interrupt-names = "awinic_irq";
+		irq-gpio = <&pio 114 0x02>;
+		//vcc0-supply = <&mt6363_vio18>;
+		channel_use_flag = <0x0f>;
+		monitor_esd_flag = <1>;
+		aw_sar,use_plug_cail;
+		aw_sar,update_fw;
+		aw_sar,using_pm_ops;
+		/* private node belongs to aw963xx */
+		start-mode = < 1 >; // 0: start in rom  1: start in ram
+		irq-mux = < 2 >; // set csx as irq pin. config this field when connect to aw96308/aw96310
+		status = "okay";
+	};
+};
+
+&i2c12 {
+	clock-frequency = <400000>;
+	status = "ok";
+	haptic_nv:haptic_nv@5A{
+		compatible = "awinic,haptic_nv";
+		reg = < 0x5A >;
+		aw862xx_i2c_addr = < 0x58 >;
+		/* aw8624x_no_reset; */
+		reset-gpio = <&pio 41 0>;
+		irq-gpio = <&pio 9 0>;
+		aw8623x_gain_bypass = < 1 >;
+		aw8623x_vib_lk_f0_cali = < 0 >;
+		aw8623x_vib_mode = < 2 >; /* mode: RAM -> 2; CONT -> 3 */
+		aw8623x_vib_f0_pre = < 2050 >;
+		aw8623x_vib_f0_cali_percen = < 7 >;
+		aw8623x_vib_cont_drv1_lvl = < 0x7F >;
+		aw8623x_vib_lra_vrms = < 1000 >; /* Motor rated voltage, mV */
+		aw8623x_vib_cont_brk_time = < 0x06 >;
+		aw8623x_vib_cont_brk_gain = < 0x08 >;
+		aw8623x_vib_cont_drv1_time = < 0x04 >;
+		aw8623x_vib_cont_drv2_time = < 0x14 >;
+		aw8623x_vib_cont_track_margin = < 0x0F >;
+		aw8623x_vib_d2s_gain = < 0x05 >;
+		aw8623x_vib_trig_config = < 0 0 0 1 0 2 0
+					    0 0 0 1 0 2 0
+					    0 0 0 1 0 2 0 >;
+		aw8623x_vib_duration_time = < 34 67 100 >;
+		aw8623x_vib_is_enabled_track_en;
+		/* aw8623x_vib_is_enabled_auto_brk; */
+		status = "okay";
+	};
+};
+
+&regulator_vibrator {
+	status = "disabled";
+};
+
+&spmi {
+	second_pmic@5 {
+		regulators {
+			mt6369_vmch_eint_low: vmch-eint-low {
+				regulator-compatible = "VMCH_EINT_LOW";
+				regulator-name = "mt6369_vmch_eint_low";
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <3500000>;
+				regulator-enable-ramp-delay = <680>;
+				regulator-allowed-modes = <0 2>;
+			};
+		};
+	};
+};
+
+&mmc1 {
+	cd-gpios = <&pio 14 GPIO_ACTIVE_HIGH>;
+	vmmc-supply = <&mt6369_vmch_eint_low>;
+};
+
+&i2c5 {
+	rt6160@75 {
+		status = "disabled";
+	};
+};
+
+&i2c6 {
+ 	status = "okay";
+	clock-frequency = <400000>;
+
+	aw882xx_smartpa_rcv: aw882xx@34 {
+		compatible = "awinic,aw882xx_smartpa";
+		#sound-dai-cells = <0>;
+		reg = <0x34>;
+		irq-gpio = <&pio 17 0x0>;
+		/*sync-load = <1>;*/
+		sound-channel = <0>; /*0:pri_l 1:pri_r 2:sec_l 3:sec_r*/
+		/*aw-cali-check = <1>;*/
+		aw-re-min = <4000>;
+		aw-re-max= <30000>;
+		/*aw-cali-mode = "none";*/
+		status = "okay";
+	};
+	aw882xx_smartpa_spk: aw882xx@35 {
+		compatible = "awinic,aw882xx_smartpa";
+		#sound-dai-cells = <0>;
+		reg = <0x35>;
+		irq-gpio = <&pio 10 0x0>;
+		/*sync-load = <1>;*/
+		sound-channel = <1>; /*0:pri_l 1:pri_r 2:sec_l 3:sec_r*/
+		/*aw-cali-check = <1>;*/
+		aw-re-min = <4000>;
+		aw-re-max= <30000>;
+		/*aw-cali-mode = "none";*/
+		status = "okay";
+	};
+
+	fsa4480: fsa4480@42 {
+		compatible = "fsa,fsa4480-i2c";
+		reg = <0x42>;
+		status = "okay";
+    };
+
+	rt6160@75 {
+		status = "disabled";
+	};
+ };
+
+&sound {
+	mediatek,spk-i2s = <25 24>;
+	mediatek,speaker-codec {
+		sound-dai = <&aw882xx_smartpa_rcv &aw882xx_smartpa_spk>;
+	};
+};
+
+&afe {
+	mediatek,ap-dmic = <0>;
+};
+
+&swtp {
+	interrupt-parent = <&pio>;
+	interrupts = <20 IRQ_TYPE_LEVEL_HIGH 20 0>;
+	deb-gpios = <&pio 20 0>;
+	debounce = <512>;
+	status = "okay";
+};
+
+&swtp_1 {
+	interrupt-parent = <&pio>;
+	interrupts = <21 IRQ_TYPE_LEVEL_HIGH 21 0>;
+	deb-gpios = <&pio 21 0>;
+	debounce = <512>;
+	status = "okay";
+};
+&swtp_2 {
+	interrupt-parent = <&pio>;
+	interrupts = <23 IRQ_TYPE_LEVEL_HIGH 23 0>;
+	deb-gpios = <&pio 23 0>;
+	debounce = <512>;
+	status = "okay";
+};
+&swtp_3 {
+	interrupt-parent = <&pio>;
+	interrupts = <22 IRQ_TYPE_LEVEL_HIGH 22 0>;
+	deb-gpios = <&pio 22 0>;
+	debounce = <512>;
+	status = "okay";
+};
+
+&therm_intf {
+	/*Vsensor name should be CASE DIFFERENT with the name in config file*/
+	mmi,temperature-names = "BACK_TEMP", "FRONT_TEMP";/*for "back_temp" in config file*/
+};
+
+&consys {
+	hwid-node = <>;
+	adie-sku = <>;
+	mot-sku = <1>;  /* mt6637 = 0, mt6631 = 1 , mt6631 + mt6686 = 2 */
+};
+
+&low_battery_throttling {
+	thd-volts-l = <
+		3163 2975 2907
+		3440 3171 3072
+		3958 3549 3395>;
+	thd-volts-h = <
+		3263 3163 2975
+		3540 3440 3171
+		4058 3958 3549>;
+	lvsys-thd-volt-l = <2824>;
+	lvsys-thd-volt-h = <2875>;
+};
+
+&md_power_throttling {
+	lbat-max-level = <3>;
+	lbat-reduce-tx-lv1 = <0>;
+	lbat-reduce-tx-lv2 = <0>;
+	lbat-reduce-tx-lv3 = <0>;
+
+	oc-max-level = <2>;
+	oc-reduce-tx-lv1 = <0>;
+	oc-reduce-tx-lv2 = <0>;
+
+	soc-max-level = <1>;
+	soc-reduce-tx-lv1 = <6>;
+};
+
+&bp_thl {
+	soc-limit-threshold = <3>;
+};
+
+&mt6375_batoc_throttle {
+	status = "disabled";
+};

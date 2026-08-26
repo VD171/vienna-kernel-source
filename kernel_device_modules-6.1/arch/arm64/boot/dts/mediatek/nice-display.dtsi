@@ -1,0 +1,188 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&mtk_leds {
+	backlight {
+		led-mode = <4>;
+		max-brightness = <16380>;
+		max-hw-brightness = <16380>;
+	};
+};
+
+&mipi_tx_config0 {
+	mipi-volt = <11>;
+};
+
+&dsi0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	switch-fps = <120>;
+	panel1@0 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/ gate-ic;
+		/delete-property/ swap-from-dts;
+		/delete-property/ lane-swap-setting;
+		/delete-property/ pn-swap-setting;
+
+        compatible = "mot,dummy,vdo,60hz";
+        reg = <0>;
+        reset-gpios = <&pio 90 0>;
+		pinctrl-names = "default";
+	};
+	panel2@1 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ gate-ic;
+
+		compatible = "tianma,nt37706,gt9916,vdo,667";
+		reg = <1>;
+		/*pm-enable-gpios = <&pio 149 0>;*/
+		reset-gpios = <&pio 90 0>;
+		vddi-gpios = <&pio 188 0>;
+		oled-dvdd-supply = <&et59041c_ldo1>;
+		vci-gpios = <&pio 190 0>;
+		res-switch = <2>;
+		rc-enable = <1>;
+		pinctrl-names = "default";
+	};
+	panel3@2 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/ gate-ic;
+
+		compatible = "boe,vtdr6126,gt9916,vdo,667";
+		reg = <2>;
+		/*pm-enable-gpios = <&pio 149 0>;*/
+		reset-gpios = <&pio 90 0>;
+		vddi-gpios = <&pio 188 0>;
+		oled-dvdd-supply = <&et59041c_ldo1>;
+		vci-gpios = <&pio 190 0>;
+		res-switch = <2>;
+		rc-enable = <1>;
+		pinctrl-names = "default";
+		port {
+			panel_in3: endpoint {
+				remote-endpoint = <&dsi_out3>;
+			};
+		};
+	};
+	panel4@3 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/ gate-ic;
+
+		compatible = "csot,vtdr6126,gt9916,vdo,667";
+		reg = <3>;
+		/*pm-enable-gpios = <&pio 149 0>;*/
+		reset-gpios = <&pio 90 0>;
+		vddi-gpios = <&pio 188 0>;
+		oled-dvdd-supply = <&et59041c_ldo1>;
+		vci-gpios = <&pio 190 0>;
+		res-switch = <2>;
+		rc-enable = <1>;
+		pinctrl-names = "default";
+		port {
+			panel_in4: endpoint {
+				remote-endpoint = <&dsi_out4>;
+			};
+		};
+	};
+
+	ports {
+		port {
+			dsi_out3: endpoint3 {
+				remote-endpoint = <&panel_in3>;
+			};
+			dsi_out4: endpoint4 {
+				remote-endpoint = <&panel_in4>;
+			};
+		};
+	};
+};
+
+&mtkfb {
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	/delete-property/ pinctrl-1;
+	/delete-property/ pinctrl-2;
+	/delete-property/ pinctrl-3;
+	/delete-property/ pinctrl-4;
+	/delete-property/ pinctrl-5;
+	/delete-property/ pinctrl-6;
+	/delete-property/ pinctrl-7;
+	/delete-property/ pinctrl-8;
+	/delete-property/ pinctrl-9;
+	/delete-property/ pinctrl-10;
+
+	pinctrl-names = "lcm_rst_out0_gpio", "mode_te_te",
+		"oled_vci_en_gpio", "oled_vio_en_gpio",
+		"oled_dvdd_en_gpio";
+
+	pinctrl-0 = <&mtkfb_pins_lcm_rst_out_gpio>;
+	pinctrl-1 = <&mtkfb_pins_lcm_dsi_te>;
+	pinctrl-2 = <&mtkfb_pins_oled_vci_en>;
+	pinctrl-3 = <&mtkfb_pins_oled_vio_en>;
+	pinctrl-4 = <&mtkfb_pins_oled_avdd_en0>;
+
+	status = "okay";
+
+};
+
+
+&pio {
+	mtkfb_pins_oled_vci_en: oled_vci_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO190__FUNC_GPIO190>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled_vio_en: oled_vio_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO188__FUNC_GPIO188>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled_avdd_en0: oled_dvdd_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO192__FUNC_GPIO192>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_lcm_rst_out_gpio: lcm_rst_out_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO90__FUNC_GPIO90>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+};
+
+&i2c6 {
+	gate_ic: gate-ic@11 {
+		status = "disabled";
+	};
+};
+
+&dispsys_config {
+	force-disable-idlemgr-by-repaint;
+};

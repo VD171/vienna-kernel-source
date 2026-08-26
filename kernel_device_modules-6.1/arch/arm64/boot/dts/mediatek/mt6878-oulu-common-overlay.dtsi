@@ -1,0 +1,425 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "mediatek/mt6878-moto-common-overlay-single-panel.dtsi"
+
+#include "mediatek/cust_oulu_camera_v4l2.dtsi"
+#include "mediatek/oulu-charger.dtsi"
+#include "mediatek/oulu-fps.dtsi"
+#include "mediatek/oulu-ntc.dtsi"
+#include "mediatek/oulu-display.dtsi"
+#include "mediatek/oulu-touch.dtsi"
+#include "mediatek/oulu-google-key.dtsi"
+
+&pio {
+	gpio1_input_pull_up: gpio1_input_pull_up {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO9__FUNC_GPIO9>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	nfc_spi_cs_mode_spi: nfc_spi_cs_mode_spi {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO73__FUNC_SPI5_CSB>;
+			bias-disable;
+		};
+	};
+
+	nfc_spi_cs_mode_idle: nfc_spi_cs_mode_idle {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO73__FUNC_GPIO73>;
+			bias-disable;
+		};
+	};
+
+	sar_int_default: sar_int_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO114__FUNC_GPIO114>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+
+	sar_int_sleep: sar_int_sleep {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO114__FUNC_GPIO114>;
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+	};
+	phone_case_int_default: phone_case_int_default {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO31__FUNC_GPIO31>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	phone_case_int_sleep: phone_case_int_sleep {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO31__FUNC_GPIO31>;
+			input-enable;
+			bias-disable;
+		};
+	};
+};
+
+
+&u2port0{
+	mediatek,eye-vrt = <4>;
+	mediatek,eye-vrt-host = <4>;
+	mediatek,eye-term = <4>;
+	mediatek,eye-term-host = <4>;
+	mediatek,rev6 = <3>;
+	mediatek,rev6-host = <3>;
+};
+
+/* BOB */
+&i2c5 {
+	hl7603@77 {
+		status = "ok";
+		compatible = "hl7603";
+		reg = <0x77>;
+		hl7603_vout_voltage = <0x15>; //3.9v */
+	};
+
+	rt6160@75 {
+		status = "disabled";
+	};
+
+	sgm62110@75 {
+		status = "ok";
+		compatible = "sgm62110";
+		reg = <0x75>;
+	};
+};
+
+
+&rt5133 {
+	status = "disabled";
+};
+
+//for alsps sensor
+&mt6369_vio28 {
+	regulator-min-microvolt = <3300000>;
+	regulator-max-microvolt = <3300000>;
+	regulator-always-on;
+};
+
+&mt6363_vio18 {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <2100000>;
+};
+
+
+
+&i2c10 {
+	status = "ok";
+	st21nfc: st21nfc@0x08 {
+		compatible = "st,st21nfc";
+		reg = <0x08>;
+		interrupt-parent = <&pio>;
+		interrupts = <2 0>;
+		bootmode = <&chosen>;
+		reset-gpios = <&pio 40 0x00>;
+		irq-gpios = <&pio 2 0x00>;
+		clkreq-gpios = <&pio 151 0x00>;
+		status = "disabled";
+	};
+
+	sx937x: sx937x@2c { /* SAR sensor */
+		compatible = "Semtech,sx937x";
+		reg = <0x2c>;
+		Semtech,power-supply-type = <0>;
+		cap_vdd-supply = <&mt6363_vio18>;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&sar_int_default>;
+		pinctrl-1 = <&sar_int_sleep>;
+		interrupt-parent = <&pio>;
+		interrupts = <114 0x02>;
+		interrupt-names = "sx937x_irq";
+		Semtech,nirq-gpio= <&pio 114 0x02>;
+		esd-reinit-on = <1>;
+		/*use PH5/6 as the reference sensor
+		set it to 0xff if the ref-phases-x is not used*/
+		Semtech,ref-phases-a = <5>;
+		Semtech,ref-phases-b = <6>;
+		Semtech,ref-phases-c = <0xff>;
+		Semtech,button-flag = <0x1f>;
+		Semtech,reg-num = <59>;
+		Semtech,reg-init = <
+			0x8024 0x00007F00
+			0x4004 0x00000070
+			0x4008 0x00000008
+			0x8020 0x00000032
+			0x8028 0x00000856    /*AFE_PARAM_PH0*/
+			0x8034 0x00000856    /*AFE_PARAM_PH1*/
+			0x8040 0x00000856    /*AFE_PARAM_PH2*/
+			0x804C 0x00000856    /*AFE_PARAM_PH3*/
+			0x8058 0x00000856    /*AFE_PARAM_PH4*/
+			0x8064 0x00000856    /*AFE_PARAM_PH5*/
+			0x8070 0x00000856    /*AFE_PARAM_PH6*/
+			0x807C 0x0000085E    /*AFE_PARAM_PH7*/
+			/*set CS3 to HZ, because it used as IRQ pin*/
+			0x8030 0x00924925    /*REG_AFEPH_PH0, CS0, ANT0, Bottom Right*/
+			0x803C 0x00B24924    /*REG_AFEPH_PH1, CS7, ANT1, Top Right*/
+			0x8048 0x0092C924    /*REG_AFEPH_PH2, CS5, ANT2, Bottom Left*/
+			0x8054 0x00925924    /*REG_AFEPH_PH3, CS4, ANT4/8, Right*/
+			0x8060 0x00964924    /*REG_AFEPH_PH4, CS6, ANT3/5/6, Left*/
+			0x806C 0x0092492C    /*REG_AFEPH_PH5, CS1, ANT0/2 REF*/
+			0x8078 0x00924964    /*REG_AFEPH_PH6, CS2, ANT4/8 REF*/
+			0x8084 0x00FFF9FF    /*REG_AFEPH_PH7, NOT USE*/
+			0x8098 0x00007878
+			0x80B8 0x00007A38
+			0x80D8 0x00006446
+			0x80F8 0x00003838
+			0x8118 0x00005555
+			0x8138 0x00005A40
+			0x8158 0x00005A40
+			0x8178 0x00005A40
+			0x80A0 0x22220001
+			0x80C0 0x32320002
+			0x80E0 0x20200001
+			0x8100 0x45450002
+			0x8120 0x19190002
+			0x8188 0x08000005
+			0x818C 0x08000006
+			0x8090 0x14005000
+			0x80B0 0x44C45001
+			0x80D0 0x16005000
+			0x80F0 0x44C45001
+			0x8110 0x7F905001
+			0x8130 0x54AC5000
+			0x8150 0x54AC5000
+			0x8170 0x54AC5000
+			0x8088 0x00300000
+			0x80A8 0x00300000
+			0x80C8 0x00300000
+			0x80E8 0x00300000
+			0x8108 0x00300000
+			0x8128 0x00300000
+			0x8148 0x00300000
+			0x8168 0x00300000
+			0x808C 0x60200030
+			0x80AC 0x60200030
+			0x80CC 0x60200030
+			0x80EC 0x60200030
+			0x810C 0x60200030
+			0x812C 0x60200030
+			0x814C 0x60200030
+			0x816C 0x60200030
+		>;
+		status = "okay";
+	};
+};
+
+&i2c12 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	nfc_pn5xx: nfc_pn5xx@28 {
+		compatible = "qcom,sn-nci";
+		reg = <0x28>;
+		interrupt-parent = <&pio>;
+		interrupts = <2 0>;
+		qcom,sn-irq = <&pio 2 0>;
+		qcom,sn-ven = <&pio 40 0>;
+		status = "okay";
+	};
+};
+
+&regulator_vibrator {
+	status = "disabled";
+};
+
+&mmc1 {
+	status = "disabled";
+};
+
+&hall_phone_case_detect {
+	pinctrl-names = "default","sleep";
+	pinctrl-0 = <&phone_case_int_default>;
+	pinctrl-1 = <&phone_case_int_sleep>;
+	hall,factory-class-name = "hall_gpio";
+	hall,input-dev-name = "phone_case_hall_sensor";
+	/* hall_vdd-supply = <&pm8350c_l8>; */
+	hall,nirq-gpio-num = <1>;
+	hall,nirq-gpio_0 = <&pio 31 0x02>;
+	hall,nirq-gpio-high-val_0 = <0>;
+	hall,nirq-gpio-low-val_0 = <1>;
+};
+
+&i2c6 {
+ 	status = "okay";
+	clock-frequency = <400000>;
+	haptic_hv@5A {
+		status = "okay";
+		compatible = "awinic,haptic_hv";
+		reg = <0x5A>;
+		irq-gpio = <&pio 9 0>;
+		reset-gpio = <&pio 41 0>;
+		pinctrl-names = "irq_active";
+		pinctrl-0 = <&gpio1_input_pull_up>;
+		f0_pre = < 1700 >;
+		mode = /bits/ 8 < 5 >;
+
+		aw8693x_f0_cali_percent = /bits/ 8 < 15 >;
+		aw8693x_gain_bypass = /bits/ 8 < 1 >;
+		aw8693x_uvlo_vol_default = /bits/ 8 < 0 >;
+		aw8693x_cont_smart_loop = /bits/ 8 < 0 >;
+		aw8693x_cont_drv1_lvl = /bits/ 8 < 0x7F >;
+		aw8693x_cont_lra_vrms = < 1000 >;
+		aw8693x_cont_drv1_time = /bits/ 8 < 0x04 >;
+		aw8693x_cont_drv2_time = /bits/ 8 < 0x14 >;
+		aw8693x_cont_track_margin = /bits/ 8 < 0x0F >;
+		aw8693x_cont_brk_gain = /bits/ 8 < 0x08 >;
+		aw8693x_cont_brk_time = /bits/ 8 < 0x08 >;
+		aw8693x_duration_time = /bits/ 8 < 20 30 60 >;
+		aw8693x_d2s_gain = /bits/ 8 < 0x04 >;
+		aw8693x_trig_config = /bits/ 8 < 0 0 0 1 0 2 0 0
+						 0 0 0 1 0 2 0 0
+						 0 0 0 1 0 2 0 0 >;
+		aw8693x_bst_vol_default = < 8500 >;
+		aw8693x_is_pwm_12k;
+		aw8693x_is_enabled_track_en;
+	};
+	aw882xx_smartpa_rcv: aw882xx@34 {
+		compatible = "awinic,aw882xx_smartpa";
+		#sound-dai-cells = <0>;
+		reg = <0x34>;
+		irq-gpio = <&pio 17 0x0>;
+		/*sync-load = <1>;*/
+		sound-channel = <0>; /*0:pri_l 1:pri_r 2:sec_l 3:sec_r*/
+		/*aw-cali-check = <1>;*/
+		aw-re-min = <4000>;
+		aw-re-max= <30000>;
+		/*aw-cali-mode = "none";*/
+		status = "okay";
+	};
+	aw882xx_smartpa_spk: aw882xx@35 {
+		compatible = "awinic,aw882xx_smartpa";
+		#sound-dai-cells = <0>;
+		reg = <0x35>;
+		irq-gpio = <&pio 10 0x0>;
+		/*sync-load = <1>;*/
+		sound-channel = <1>; /*0:pri_l 1:pri_r 2:sec_l 3:sec_r*/
+		/*aw-cali-check = <1>;*/
+		aw-re-min = <4000>;
+		aw-re-max= <30000>;
+		/*aw-cali-mode = "none";*/
+		status = "okay";
+	};
+
+	fsa4480: fsa4480@42 {
+		compatible = "fsa,fsa4480-i2c";
+		reg = <0x42>;
+		status = "okay";
+    };
+ };
+
+&sound {
+	mediatek,spk-i2s = <25 24>;
+	mediatek,speaker-codec {
+		sound-dai = <&aw882xx_smartpa_rcv &aw882xx_smartpa_spk>;
+	};
+};
+
+&afe {
+	mediatek,ap-dmic = <0>;
+};
+
+&swtp {
+	interrupt-parent = <&pio>;
+	interrupts = <104 IRQ_TYPE_LEVEL_HIGH 104 0>;
+	deb-gpios = <&pio 104 0>;
+	debounce = <512>;
+	status = "okay";
+};
+
+&swtp_1 {
+	interrupt-parent = <&pio>;
+	interrupts = <103 IRQ_TYPE_LEVEL_HIGH 103 0>;
+	deb-gpios = <&pio 103 0>;
+	debounce = <512>;
+	status = "okay";
+};
+&swtp_2 {
+	interrupt-parent = <&pio>;
+	interrupts = <102 IRQ_TYPE_LEVEL_LOW 102 0>;
+	deb-gpios = <&pio 102 0>;
+	debounce = <512>;
+	status = "okay";
+};
+&swtp_3 {
+	interrupt-parent = <&pio>;
+	interrupts = <101 IRQ_TYPE_LEVEL_HIGH 101 0>;
+	deb-gpios = <&pio 101 0>;
+	debounce = <512>;
+	status = "okay";
+};
+&swtp_4 {
+        interrupt-parent = <&pio>;
+        interrupts = <108 IRQ_TYPE_LEVEL_HIGH 108 0>;
+        deb-gpios = <&pio 108 0>;
+        debounce = <512>;
+        status = "okay";
+};
+
+&therm_intf {
+	/*Vsensor name should be CASE DIFFERENT with the name in config file*/
+	mmi,temperature-names = "BACK_TEMP", "FRONT_TEMP";/*for "back_temp" in config file*/
+};
+
+&consys {
+	hwid-node = <>;
+	adie-sku = <>;
+	mot-sku = <0>;  /* mt6637 = 0, mt6631 = 1 , mt6631 + mt6686 = 2 */
+};
+
+&low_battery_throttling {
+	thd-volts-l = <
+		3163 2975 2907
+		3440 3171 3072
+		3958 3549 3395>;
+	thd-volts-h = <
+		3263 3163 2975
+		3540 3440 3171
+		4058 3958 3549>;
+	lvsys-thd-volt-l = <2824>;
+	lvsys-thd-volt-h = <2875>;
+};
+
+&md_power_throttling {
+	lbat-max-level = <3>;
+	lbat-reduce-tx-lv1 = <0>;
+	lbat-reduce-tx-lv2 = <0>;
+	lbat-reduce-tx-lv3 = <0>;
+
+	oc-max-level = <2>;
+	oc-reduce-tx-lv1 = <0>;
+	oc-reduce-tx-lv2 = <0>;
+
+	soc-max-level = <1>;
+	soc-reduce-tx-lv1 = <6>;
+};
+
+&bp_thl {
+	soc-limit-threshold = <3>;
+};
+
+&mt6375_batoc_throttle {
+	status = "disabled";
+};
