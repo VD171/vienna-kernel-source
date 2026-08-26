@@ -87,10 +87,10 @@ stock, e um kernel opcional com KernelSU-Next built-in) fica em
 
 ## Licença
 
-As fontes do kernel são **GPL-2.0**, copyright dos respectivos autores, publicadas por
-[MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Espelhá-las é para isso que a licença
-existe. Todos os avisos originais estão intactos. Nada aqui é relicenciado, e este repo não reivindica
-copyright algum sobre o código espelhado.
+As fontes do kernel são **GPL-2.0** (ver [`LICENSE`](LICENSE)), copyright dos respectivos autores,
+publicadas por [MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Espelhá-las é para isso
+que a licença existe. Todos os avisos originais estão intactos, incluindo o `COPYING` e o `LICENSES/`
+de cada árvore. Nada aqui é relicenciado, e este repo não reivindica copyright algum sobre o código espelhado.
 
 ## Links
 

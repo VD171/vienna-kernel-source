@@ -87,10 +87,10 @@ This repo is only the source. The reproducible build (GitHub Actions, byte exact
 
 ## License
 
-The kernel sources are **GPL-2.0**, copyright their respective authors, released by
-[MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Mirroring them is what the license is
-for. All original notices are intact. Nothing here is relicensed, and this repo claims no copyright
-over the mirrored code.
+The kernel sources are **GPL-2.0** (see [`LICENSE`](LICENSE)), copyright their respective authors,
+released by [MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Mirroring them is what the
+license is for. All original notices are intact, including each tree's own `COPYING` and `LICENSES/`.
+Nothing here is relicensed, and this repo claims no copyright over the mirrored code.
 
 ## Links
 
