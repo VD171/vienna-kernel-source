@@ -48,6 +48,7 @@ Os dois vêm da mesma tag do lado da Motorola, então uma branch é um conjunto 
 | Branch | Android | Build |
 |---|---|---|
 | [`MMI-W1UIS36H.39-17-8`](../../tree/MMI-W1UIS36H.39-17-8) | 16 | atual |
+| [`MMI-W1UIS36H.39-25-8`](../../tree/MMI-W1UIS36H.39-25-8) | 16 | Global (RETEU/DEFAULT) |
 
 Tags novas podem ser arquivadas com o tempo. O catálogo completo das tags publicadas do `vienna` está em
 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build#fontes-de-kernel-publicadas-catálogo).
@@ -66,6 +67,8 @@ SHA256 dos tarballs originais, como baixados da Motorola:
 ```
 aca116cd615c011bfc34925d3f52365538efd6f0cbb64847ae024bcf4a9a0655  kernel-mtk--MMI-W1UIS36H.39-17-8.tar.gz
 94a0d8e3854b0e86e4bad141f3da28d8b9efc70a9635f2858b3da25474344cf2  kernel-kernel_device_modules-6.1--MMI-W1UIS36H.39-17-8.tar.gz
+d3d2c4ae27788345729b2113508cc8f7238fb502187e1a6f3710b1d72f04c2e8  kernel-mtk--MMI-W1UIS36H.39-25-8.tar.gz
+898827cb8325c3c4ea0dd40eeb5b6f730aefd6699fcd312cdf0ded1597931715  kernel-kernel_device_modules-6.1--MMI-W1UIS36H.39-25-8.tar.gz
 ```
 
 ## Nota sobre o `certs/mtk_signing_key.pem`
