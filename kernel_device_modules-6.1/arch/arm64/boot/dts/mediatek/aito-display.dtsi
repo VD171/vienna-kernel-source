@@ -1,0 +1,276 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&mtk_leds {
+	backlight {
+		/delete-property/ max-hw-brightness;
+		/delete-property/ max-brightness;
+		max-brightness = <16380>;
+		max-hw-brightness = <16380>;
+	};
+};
+
+&mtk_leds1 {
+	backlight {
+		/delete-property/ max-hw-brightness;
+		/delete-property/ max-brightness;
+		max-brightness = <16380>;
+		max-hw-brightness = <16380>;
+	};
+};
+
+&mipi_tx_config0 {
+	mipi-volt = <11>;
+};
+
+&dsi0 {
+	status = "okay";
+
+	panel1@0 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/ gate-ic;
+		/delete-property/ swap-from-dts;
+		/delete-property/ lane-swap-setting;
+		/delete-property/ pn-swap-setting;
+
+		compatible = "mot,dummy,vdo,60hz";
+	};
+
+	panel2@1 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/gate-ic;
+
+		compatible = "csot,nt37707,cmd,667";
+		pm-enable-gpios = <&pio 79 0>,
+                          <&pio 59 0>,
+                          <&pio 154 0>,
+                          <&pio 153 0>;
+		reset-gpios = <&pio 90 0>;
+	};
+
+	panel3@2 {
+		compatible = "tianma,nt37707,cmd,667";
+		reg = <2>;
+		pm-enable-gpios = <&pio 79 0>,
+                          <&pio 59 0>,
+                          <&pio 154 0>,
+                          <&pio 153 0>;
+		reset-gpios = <&pio 90 0>;
+		pinctrl-names = "default";
+		port {
+			panel_in2: endpoint {
+				remote-endpoint = <&dsi_out2>;
+			};
+		};
+	};
+
+	ports {
+		port {
+			dsi_out2: endpoint@2 {
+				remote-endpoint = <&panel_in2>;
+			};
+		};
+	};
+};
+
+&dsi1 {
+	status = "okay";
+
+
+	panel21@0 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/ gate-ic;
+		/delete-property/ swap-from-dts;
+		/delete-property/ lane-swap-setting;
+		/delete-property/ pn-swap-setting;
+
+		compatible = "mot,dummy,cmd,60hz";
+	};
+
+	panel22@1 {
+		/delete-property/ compatible;
+		/delete-property/ pm-enable-gpios;
+		/delete-property/ reset-gpios;
+		/delete-property/gate-ic;
+		/delete-property/ swap-from-dts;
+		/delete-property/ lane-swap-setting;
+		/delete-property/ pn-swap-setting;
+
+		compatible = "csot,nt37705,cmd,cli";
+		pm-enable-gpios = <&pio 114 0>,
+                          <&pio 59 0>,
+                          <&pio 77 0>,
+                          <&pio 115 0>;
+		reset-gpios = <&pio 113 0>;
+	};
+
+	panel23@2 {
+		compatible = "csot,nt37705,cmd,c6,cli";
+		reg = <2>;
+		pm-enable-gpios = <&pio 114 0>,
+                          <&pio 59 0>,
+                          <&pio 77 0>,
+                          <&pio 115 0>;
+		reset-gpios = <&pio 113 0>;
+		port {
+			panel23_in: endpoint {
+				remote-endpoint = <&dsi1_out2>;
+			};
+		};
+	};
+
+	ports {
+		port {
+			dsi1_out2: endpoint@2 {
+				remote-endpoint = <&panel23_in>;
+			};
+		};
+	};
+};
+
+&mtkfb {
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	/delete-property/ pinctrl-1;
+	/delete-property/ pinctrl-2;
+	/delete-property/ pinctrl-3;
+	/delete-property/ pinctrl-4;
+	/delete-property/ pinctrl-5;
+	/delete-property/ pinctrl-6;
+	/delete-property/ pinctrl-7;
+	/delete-property/ pinctrl-8;
+	/delete-property/ pinctrl-9;
+	/delete-property/ pinctrl-10;
+
+	pinctrl-names = "lcm_rst_out0_gpio", "mode_te_te",
+		"oled_vci_en_gpio", "oled_vio_en_gpio",
+		"oled_dvdd_en0_gpio", "oled_dvdd_en1_gpio",
+
+		"lcm1_rst_out0_gpio", "mode_te_te1",
+		"oled1_vci_en_gpio", "oled1_vio_en_gpio",
+		"oled1_dvdd_en0_gpio", "oled1_dvdd_en1_gpio";
+
+	pinctrl-0 = <&mtkfb_pins_lcm_rst_out_gpio>;
+	pinctrl-1 = <&mtkfb_pins_lcm_dsi_te>;
+	pinctrl-2 = <&mtkfb_pins_oled_vci_en>;
+	pinctrl-3 = <&mtkfb_pins_oled_vio_en>;
+	pinctrl-4 = <&mtkfb_pins_oled_avdd_en0>;
+	pinctrl-5 = <&mtkfb_pins_oled_avdd_en1>;
+
+	pinctrl-6 = <&mtkfb_pins_lcm1_rst_out_gpio>;
+	pinctrl-7 = <&mtkfb_pins_lcm_dsi1_te>;
+	pinctrl-8 = <&mtkfb_pins_oled1_vci_en>;
+	pinctrl-9 = <&mtkfb_pins_oled1_vio_en>;
+	pinctrl-10 = <&mtkfb_pins_oled1_avdd_en0>;
+	pinctrl-11 = <&mtkfb_pins_oled1_avdd_en1>;
+
+	status = "okay";
+
+};
+
+
+&pio {
+	mtkfb_pins_oled_vci_en: oled_vci_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO153__FUNC_GPIO153>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled_vio_en: oled_vio_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO79__FUNC_GPIO79>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled_avdd_en0: oled_dvdd_en0_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO59__FUNC_GPIO59>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled_avdd_en1: oled_dvdd_en1_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO154__FUNC_GPIO154>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_lcm_rst_out_gpio: lcm_rst_out_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO90__FUNC_GPIO90>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled1_vci_en: oled1_vci_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO115__FUNC_GPIO115>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled1_vio_en: oled1_vio_en_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO114__FUNC_GPIO114>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled1_avdd_en0: oled1_dvdd_en0_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO59__FUNC_GPIO59>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_oled1_avdd_en1: oled1_dvdd_en1_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO77__FUNC_GPIO77>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+	mtkfb_pins_lcm1_rst_out_gpio: lcm1_rst_out_gpio {
+		pins_cmd_dat {
+			pinmux = <PINMUX_GPIO113__FUNC_GPIO113>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+};
+
+&dispsys_config {
+	pre-define-bw-dyn-ovl = <0xffffffff>, <4200>, <0>, <1900>;
+	crtc-ovl-usage-dyn-ovl = <0xf>, <0x2>, <0x2>, <0xc>;
+	dual-disp-dynamic-ovl;
+
+	pre-define-bw = <0xffffffff>, <4200>, <0>, <1000>;
+	crtc-ovl-usage = <0x7>, <0x2>, <0x2>, <0x8>;
+};

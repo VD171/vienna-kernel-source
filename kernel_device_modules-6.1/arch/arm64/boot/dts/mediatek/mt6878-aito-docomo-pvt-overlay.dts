@@ -1,0 +1,187 @@
+/* Copyright (c) 2023, Motorola Mobility Inc. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include "mediatek/mt6878-aito-common-overlay.dtsi"
+
+#define AITO_DOCOMO_RADIO 5
+
+/* Board match root node */
+/ {
+	fragment@model {
+		target-path = "/";
+		__overlay__ {
+			mot,model = "aito";
+			mot,board-id = <(AITO_DOCOMO_RADIO << 8 | 0x43) 0xC000>, <(AITO_DOCOMO_RADIO << 8 | 0x42) 0xB200>;
+		};
+	};
+};
+
+&lk_charger {
+	boot-battery-voltage = <3600000>;
+	boot-battery-voltage-max = <3600000>;
+	/*boot battery voltage when using AC charger*/
+	ac_charger_boot_battery_voltage = <3500000>;
+};
+
+&cw2217_master {
+	df-serialnum = "SB18E39389";
+	#include "bat_setting/CW_AITO-atl-2910mah-DCM.dtsi"
+};
+
+&cw2217_flip {
+	df-serialnum = "SB18E39389";
+	#include "bat_setting/CW_AITO-atl-1090mah-DCM.dtsi"
+};
+
+&mt6375_typec {
+	mmi,en-moto-typec-otp;
+};
+
+&charger {
+	/*typec_otp*/
+	mmi,typecotp-charger;
+	mmi,wls-boost-using-otg;
+
+	/*pe5 && pdc && wlc*/
+	fast_charging_indicator = <0x8014>;
+
+	mmi,mmi-normal-zones = <0 4200 141>,
+			<10 4530 141>,
+			<15 4530 141>,
+			<25 4530 141>,
+			<35 4530 141>,
+			<45 4530 282>,
+			<60 4200 141>;
+	mmi,mmi-temp-zones = <0 4200 564 0>,
+			<10 4250 2256 1410>,
+			<15 0 2256 2256>,
+			<45 4250 4200 2820>,
+			<45 4400 2820 2256>,
+			<60 4200 2256 0>;
+	mmi,mmi-ffc-zones = <0 4200 148>,
+			<10 4530 148>,
+			<15 4530 148>,
+			<25 4550 371>,
+			<35 4550 436>,
+			<45 4550 648>,
+			<60 4200 148>;
+
+	mmi,mmi-normal-zones-main = <0 4200 141>,
+			<10 4530 141>,
+			<15 4530 141>,
+			<25 4530 141>,
+			<35 4530 141>,
+			<45 4530 282>,
+			<60 4200 141>;
+	mmi,mmi-temp-zones-main = <0 4200 564 0>,
+			<10 4250 2256 1410>,
+			<15 0 2256 2256>,
+			<45 4250 4200 2820>,
+			<45 4400 2820 2256>,
+			<60 4200 2256 0>;
+	mmi,mmi-ffc-zones-main = <0 4200 148>,
+			<10 4530 148>,
+			<15 4530 148>,
+			<25 4550 371>,
+			<35 4550 436>,
+			<45 4550 648>,
+			<60 4200 148>;
+
+	mmi,mmi-normal-zones-flip = <0 4200 53>,
+			<10 4530 53>,
+			<15 4530 53>,
+			<25 4530 53>,
+			<35 4530 53>,
+			<45 4530 105>,
+			<60 4200 53>;
+	mmi,mmi-temp-zones-flip = <0 4200 210 0>,
+			<10 4250 840 525>,
+			<15 0 840 840>,
+			<45 4250 1350 1050>,
+			<45 4400 1050 840>,
+			<60 4200 840 0>;
+	mmi,mmi-ffc-zones-flip = <0 4200 53>,
+			<10 4530 53>,
+			<15 4530 53>,
+			<25 4550 150>,
+			<35 4550 190>,
+			<45 4550 470>,
+			<60 4200 53>;
+};
+
+&i2c0 {
+	wt6670f@35 {
+		not-register-qc-dev;
+	};
+};
+
+&mmi_pehv {
+	status = "disabled";
+};
+
+&spmi {
+	second_pmic@5 {
+		regulators {
+			mt6369_mos_con1: mos-con1 {
+				regulator-name = "mt6369_mos_con1";
+			};
+		};
+	};
+};
+
+&mt6375_chg {
+	mmi,otp-mos-regulator-name = "mt6369_mos_con1";
+	dcp15w-icl-max = <2000>; //mA
+};
+
+&cps_wls_charger {
+	wireless-tx-support;
+	config-otg-support;
+	config-otg-vout = <5500000>;
+	config-otg-iout = <1800000>;
+};
+
+&tfa9865_spk {
+    support_1_8_V=<1>;
+};
+
+&tfa9865_rcv {
+    support_1_8_V=<1>;
+};
+
+&low_battery_throttling {
+	thd-volts-l = <
+		3369 3243 3133
+		3772 3412 3277
+		4231 3753 3570>;
+	thd-volts-h = <
+		3469 3369 3243
+		3872 3772 3412
+		4331 4231 3753>;
+	lvsys-thd-volt-l = <3133>;
+	lvsys-thd-volt-h = <3243>;
+};
+
+&cpu_power_throttling {
+	lbat-limit-freq-lv2 = < 1800000  1800000 1800000>;
+	lbat-limit-freq-lv3 = < 1200000  1200000 1200000>;
+};
+
+&gpu_power_throttling {
+	lbat-limit-freq = <1200000 700000 600000>;
+};
+
+#include <aito_pvt/cust.dtsi>
+/*End of this file, DO NOT ADD ANYTHING HERE*/
