@@ -88,13 +88,6 @@ Este repo é só a fonte. O build reprodutível (GitHub Actions, `Linux version`
 stock, e um kernel opcional com KernelSU-Next built-in) fica em
 **[VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build)**.
 
-## Licença
-
-As fontes do kernel são **GPL-2.0** (ver [`LICENSE`](LICENSE)), copyright dos respectivos autores,
-publicadas por [MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Espelhá-las é para isso
-que a licença existe. Todos os avisos originais estão intactos, incluindo o `COPYING` e o `LICENSES/`
-de cada árvore. Nada aqui é relicenciado, e este repo não reivindica copyright algum sobre o código espelhado.
-
 ## Links
 
 | Onde | O quê |
@@ -119,3 +112,10 @@ de cada árvore. Nada aqui é relicenciado, e este repo não reivindica copyrigh
 | E-mail | vd.priv8@pm.me |
 | XDA-Developers | [@VD171](https://xdaforums.com/m/vd171.4699873/) |
 | GitHub | [@VD171](https://github.com/VD171) |
+
+## Licença
+
+As fontes do kernel são **GPL-2.0** (ver [`LICENSE`](LICENSE)), copyright dos respectivos autores,
+publicadas por [MotorolaMobilityLLC](https://github.com/MotorolaMobilityLLC). Espelhá-las é para isso
+que a licença existe. Todos os avisos originais estão intactos, incluindo o `COPYING` e o `LICENSES/`
+de cada árvore. Nada aqui é relicenciado, e este repo não reivindica copyright algum sobre o código espelhado.
