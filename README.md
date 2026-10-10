@@ -51,7 +51,8 @@ Both come from the same tag name on Motorola's side, so one branch is one comple
 | [`MMI-W1UIS36H.39-25-8`](../../tree/MMI-W1UIS36H.39-25-8) | 16 | a later build |
 
 `MMI-W1UI36H.39-25-11-4` (Android 16, the build currently rolling out over the air) has been requested
-from Motorola and will be mirrored here once it is published.
+from Motorola and will be mirrored here once it is published. The stock firmware for this build is
+already published at [VD171/vienna-firmware](https://github.com/VD171/vienna-firmware); only the kernel source is still pending.
 
 More tags may be archived over time. The full catalogue of published `vienna` tags lives in
 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build#published-kernel-sources-catalogue).

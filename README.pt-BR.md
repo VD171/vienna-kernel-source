@@ -51,7 +51,8 @@ Os dois vêm da mesma tag do lado da Motorola, então uma branch é um conjunto 
 | [`MMI-W1UIS36H.39-25-8`](../../tree/MMI-W1UIS36H.39-25-8) | 16 | uma build posterior |
 
 A `MMI-W1UI36H.39-25-11-4` (Android 16, a build que está sendo distribuída agora por OTA) foi solicitada
-à Motorola e será espelhada aqui assim que for publicada.
+à Motorola e será espelhada aqui assim que for publicada. O firmware stock desta build já está
+publicado em [VD171/vienna-firmware](https://github.com/VD171/vienna-firmware); só a source do kernel ainda está pendente.
 
 Tags novas podem ser arquivadas com o tempo. O catálogo completo das tags publicadas do `vienna` está em
 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build#fontes-de-kernel-publicadas-catálogo).
