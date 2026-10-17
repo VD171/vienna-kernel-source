@@ -1,0 +1,188 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2020 MediaTek Inc.
+ */
+
+/* TOUCH start */
+&spi3 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	mediatek,pad-select = <0>, <1>, <2>;
+	pinctrl-names = "default", "gt9896s_int_active",
+		"gt9896s_reset_active", "gt9896s_int_suspend",
+		"gt9896s_reset_suspend", "gt9896s_spi_mode";
+	pinctrl-0 = <&ctp_gt9896s_pins_default>;
+	pinctrl-1 = <&ctp_gt9896s_int_active>;
+	pinctrl-2 = <&ctp_gt9896s_reset_active>;
+	pinctrl-3 = <&ctp_gt9896s_int_suspend>;
+	pinctrl-4 = <&ctp_gt9896s_reset_suspend>;
+	pinctrl-5 = <&ctp_gt9896s_spi_mode>;
+
+	goodix_ts_spi@0 {
+		status = "okay";
+		compatible = "goodix,gt9916S";
+		reg = <0x0>;
+		pinctrl-names = "pmx_ts_active", "pmx_ts_suspend", "stylus_clk_active", "stylus_clk_suspend";
+		pinctrl-0 = <&ctp_gt9896s_int_active &ctp_gt9896s_reset_active>;
+		pinctrl-1 = <&ctp_gt9896s_int_suspend &ctp_gt9896s_reset_suspend>;
+		spi-max-frequency = <15000000>;  /* 4800000,9600000,15000000,19200000 */
+		mmi,status = "/chosen","mmi,panel_name","contains","tm_nt37706","tianma_nt37706";
+		goodix,panel-supplier = "tm","tianma";
+		goodix,reset-gpio = <&pio 152 0x0>;
+		goodix,irq-gpio = <&pio 7 0x2002>;
+		goodix,avdd-gpio = <&pio 184 0x0>;
+		iovdd-supply = <&mt6369_vtp>;
+		goodix,iovdd-name = "iovdd";
+		goodix,irq-flags = <0x2002>; /* 1:trigger rising, 2:trigger falling;*/
+		goodix,panel-max-id = <10>;
+		goodix,panel-max-x = <19520>;
+		goodix,panel-max-y = <43392>;
+		goodix,panel-max-w = <256>;
+		goodix,panel-max-p = <256>;
+		goodix,edge-ctrl;
+		goodix,sample-ctrl;
+		goodix,interpolation-ctrl;
+		goodix,gesture-wait-pm;
+		mmi,enable-gestures;
+		mmi,power-off-suspend;
+		mmi,usb-charger-detection;
+		mmi,supported_gesture_type = <0x07>;
+		mmi,resolution_boost = <16>;
+		mmi,enable-palm;
+		mtk-charger = <&mt6375_chg>;
+	};
+
+	focaltech@1{
+		status = "okay";
+		compatible = "focaltech,fts";
+		reg = <0x1>;
+		mmi,status = "/chosen","mmi,panel_name","contains","csot_nt37706","boe_vtdr6126a";
+		focaltech,panel-supplier = "csot","boe";
+		spi-max-frequency = <9600000>;
+		focaltech,vdd-gpio = <&pio 184 0x0>;
+		focaltech,reset-gpio = <&pio 152 0x0>;
+		focaltech,irq-gpio = <&pio 7 0x2008>;
+		vcc_i2c-supply = <&mt6369_vtp>;
+		//vcc_i2c-supply = <&L13A>;
+		focaltech,max-touch-number = <10>;
+		focaltech,display-coords =  <0 0 19520 43392>;
+		focaltech,edge-ctrl;
+		focaltech,interpolation-ctrl;
+		focaltech,sample-ctrl;
+
+		pinctrl-names = "pmx_ts_active", "pmx_ts_suspend", "pmx_ts_release";
+		pinctrl-0 = <&ctp_gt9896s_int_active &ctp_gt9896s_reset_active>;
+		pinctrl-1 = <&ctp_gt9896s_int_suspend &ctp_gt9896s_reset_suspend>;
+		//panel = <&mot_tm_icna3508_ft3683g_667_1080x2400_dsc_vid &mot_boe_vtdr6130a_ft3683g_667_1080x2400_dsc_cmd>;
+		mmi,usb-charger-detection;
+		mmi,enable-gestures;
+		mmi,supported_gesture_type = <0x07>;
+		mmi,resolution_boost = <16>;
+		mtk-charger = <&mt6375_chg>;
+	};
+
+	eswin_eph861x@2 {
+		status = "disabled";
+		compatible = "eswin,eph861x";
+		reg = <0x2>;
+		mmi,status = "/chosen","mmi,panel_name","contains","boe_vtdr6126a";
+		eswin,panel-supplier = "boe";
+		pinctrl-names = "pmx_ts_active", "pmx_ts_suspend";
+		pinctrl-0 = <&ctp_gt9896s_int_active &ctp_gt9896s_reset_active>;
+		pinctrl-1 = <&ctp_gt9896s_int_suspend &ctp_gt9896s_reset_suspend>;
+		interrupt-parent = <&pio>;
+		interrupts = <4 2>; // high-to-low edge triggered
+		spi-max-frequency = <9600000>;  /* 4800000,9600000,15000000,19200000 */
+		spi-cpol;
+		spi-cpha;
+		eswin,spi-mode = <3>;
+		eswin,spi-byte-delay-us = <10>;
+		eswin,spi-block-delay-us = <10>;
+		eswin,avdd-gpio = <&pio 184 0x0>;
+		vdd-supply = <&mt6369_vtp>;
+		eswin,regulator_dvdd = "vdd";
+		eswin,power-delay-ms = <200>;
+		eswin,irq-gpio = <&pio 7 0x6002>; // Pin7 on GPIO header
+		eswin,irq-on-state = <0>;
+		eswin,reset-gpio = <&pio 152 0>; // Pin152 on GPIO header
+		eswin,reset-on-state = <0>;
+		eswin,reset-active-ms = <20>;
+		eswin,reset-delat-ms = <200>;
+		eswin,suspend-mode = <0x02>;
+		eswin,panel-invert-x = <0>;
+		eswin,panel-invert-y = <0>;
+		eswin,panel-max-x = <19520>;
+		eswin,panel-max-y = <43392>;
+		eswin,fw_name = "EPH86XX_fw.bin";
+		eswin,input_name = "eswin_ts";
+		eswin,edge-ctrl;
+		eswin,interpolation-ctrl;
+		eswin,sample-ctrl;
+		mmi,usb-charger-detection;
+		mmi,enable-gestures;
+		mmi,supported_gesture_type = <0x07>;
+		mmi,resolution_boost = <16>;
+		mtk-charger = <&mt6375_chg>;
+	};
+};
+
+&spi4 {
+	status = "disabled";
+};
+
+&odm {
+	mmi_stow: mmi_stow {
+		compatible = "moto,mmi_stow";
+		pinctrl-names = "default";
+		pinctrl-0 = <&ctp_gt9896s_stow_gpio>;
+		mmi,stow-gpio = <&pio 4 0x0>;
+	};
+};
+
+&pio {
+	ctp_gt9896s_pins_default: pins_default {
+	};
+	ctp_gt9896s_int_active: int1_active {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO7__FUNC_GPIO7>;
+			input-enable;
+		};
+	};
+	ctp_gt9896s_reset_active: reset1_active {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO152__FUNC_GPIO152>;
+			output-high;
+		};
+	};
+	ctp_gt9896s_int_suspend: int1_suspend {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO7__FUNC_GPIO7>;
+			output-low;
+		};
+	};
+	ctp_gt9896s_reset_suspend: reset1_suspend {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO152__FUNC_GPIO152>;
+			output-low;
+		};
+	};
+	ctp_gt9896s_stow_gpio: stow_gpio_active {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO4__FUNC_GPIO4>;
+			drive-strength = <2>;
+		};
+	};
+	ctp_gt9896s_spi_mode: spimode-default {
+		pins-cmd-dat {
+			pinmux = <PINMUX_GPIO68__FUNC_SPI3_CLK>,
+				<PINMUX_GPIO69__FUNC_SPI3_CSB>,
+				<PINMUX_GPIO70__FUNC_SPI3_MO>,
+				<PINMUX_GPIO71__FUNC_SPI3_MI>;
+			drive-strength = <2>;
+		};
+	};
+
+
+};
+/* TOUCH end */
