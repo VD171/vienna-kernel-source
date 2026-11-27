@@ -49,9 +49,11 @@ Both come from the same tag name on Motorola's side, so one branch is one comple
 |---|---|---|
 | [`MMI-W1UIS36H.39-17-8`](../../tree/MMI-W1UIS36H.39-17-8) | 16 | the build the device shipped with |
 | [`MMI-W1UIS36H.39-25-8`](../../tree/MMI-W1UIS36H.39-25-8) | 16 | a later build |
-| [`MMI-W1UI36H.39-25-11-4`](../../tree/MMI-W1UI36H.39-25-11-4) | 16 | the build currently rolling out over the air (no "S" in the label) |
+| [`MMI-W1UI36H.39-25-11-4`](../../tree/MMI-W1UI36H.39-25-11-4) | 16 | a later build (no "S" in the label) |
 
 The stock firmware for these builds is also published at [VD171/vienna-firmware](https://github.com/VD171/vienna-firmware).
+
+> ⏳ The device is now on `W1UIS36H.39-25-11-4-3`; its source has been requested from Motorola and will be archived here once published.
 
 More tags may be archived over time. The full catalogue of published `vienna` tags lives in
 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build#published-kernel-sources-catalogue).
