@@ -95,6 +95,16 @@ Este repo é só a fonte. O build reprodutível (GitHub Actions, `Linux version`
 stock, e um kernel opcional com KernelSU-Next built-in) fica em
 **[VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build)**.
 
+## Veja também
+
+Os três repositórios **vienna**, uma função cada (este incluído):
+
+| Onde | O quê |
+|---|---|
+| 🛠 [VD171/vienna-kernel-build](https://github.com/VD171/vienna-kernel-build) | root (KernelSU-Next LKM aplicado no `init_boot`), a build reproduzível do kernel e a receita de flash |
+| 📲 [VD171/vienna-firmware](https://github.com/VD171/vienna-firmware) | firmware stock (o pacote fastboot oficial menos o `super`): recuperar a cadeia de boot, fazer unroot ou restaurar uma partição |
+| 📦 [VD171/vienna-kernel-source](https://github.com/VD171/vienna-kernel-source) | **(este repo)** as fontes GPL do kernel, extraídas e conferidas por checksum, uma branch por tag de build |
+
 ## Links
 
 | Onde | O quê |
